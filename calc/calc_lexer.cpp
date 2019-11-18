@@ -26,6 +26,7 @@
 #include <string>
 #include <vector>
 
+#include "calc_exception.h"
 #include "calc.h"
 
 // This runs in O(n) time.
@@ -43,10 +44,9 @@ bool vector_find(std::vector<char> v, char c){
 
 void lexer(std::string line, std::vector<Token>& tokens){
     int index = 0;
-    std::vector<int> syntax_errors;
 
-    try {
-        for(char c: line){
+    for(char c: line){
+        if (!std::isspace(c)) {
             if (vector_find(CharFactory::getChars(TokenType::BINOP), c))
                 tokens.push_back(Token(c, TokenType::BINOP));
             else if (vector_find(CharFactory::getChars(TokenType::LP), c))
@@ -62,13 +62,9 @@ void lexer(std::string line, std::vector<Token>& tokens){
                 }
             }
             else
-                throw index;
-
-            index++;
+                throw CalcException(index, "Unknown character");
         }
-    } catch (...) {
-        tokens.clear();
-        std::cout << line << std::endl;
-        std::cout << std::string(index, ' ') << "^ syntax error" << std::endl;
+
+        index++;
     }
 }

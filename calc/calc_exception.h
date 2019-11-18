@@ -1,4 +1,4 @@
-// calc.cpp
+// calc_exception.h
 // Copyright (c) 2019, Fehmi Noyan ISI fnoyanisi@yahoo.com
 // All rights reserved.
 //
@@ -22,41 +22,26 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#ifndef CALC_EXCEPTION_H_
+#define CALC_EXCEPTION_H_
+
 #include <iostream>
-#include <string>
-#include <vector>
-#include <cctype>
+#include <exception>
 
-#include "calc.h"
-#include "calc_lexer.h"
-#include "calc_exception.h"
+#define BUFSIZE 1024
 
-int main(){
-    std::vector<Token> tokens;
-    std::string input;
+struct CalcException : public std::exception {
+    private:
+        char message[BUFSIZE];
 
-    std::cout << "Type \"quit\" to exit." << std::endl;
-
-    while(true) {
-        tokens.clear();
-
-        std::cout << ">> ";
-        std::getline(std::cin,input);
-
-        if (input == "quit")
-            return 0;
-
-        try {
-            lexer(input, tokens);
-
-            for (auto t : tokens)
-                std::cout << t.str() << std::endl;
-
-        } catch (CalcException& e) {
-            std::cout << input << std::endl;
-            std::cout << e.what() << std::endl;
+    public:
+        CalcException(int i, std::string m){
+            snprintf(message, BUFSIZE, "%*s^ %s", i, "", m.c_str());
         }
-    }
 
-    return 0;
-}
+        const char * what () const throw (){
+            return message;
+        }
+};
+
+#endif
