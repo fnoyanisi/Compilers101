@@ -11,7 +11,7 @@
 //   notice, this list of conditions and the following disclaimer in the
 //   documentation and/or other materials provided with the distribution.
 //
-// THIS SOFTWARE IS PROVIDED BY Fehmi Noyan ISI ''AS IS'' AND ANY
+// THIS SOFTWARE IS PROVIDED BY Fehmi Noyan ISI ""AS IS"" AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 // DISCLAIMED. IN NO EVENT SHALL Fehmi Noyan ISI BE LIABLE FOR ANY
@@ -29,7 +29,7 @@
 #include <string>
 #include <vector>
 
-enum TokenType {BINOP, LP, RP, NUMBER};
+enum class TokenType {BINOP, LP, RP, NUMBER, SPACE, UNKNOWN};
 
 class Token {
     public:
@@ -37,8 +37,8 @@ class Token {
         TokenType type;
         std::string lexeme;
 
-        Token(char c, TokenType t) {
-            this->lexeme = c;
+        Token(std::string s, TokenType t) {
+            this->lexeme = s;
             this->type = t;
         }
 
@@ -52,23 +52,55 @@ class Token {
                 case TokenType::LP: return "LeftP " + this-> lexeme;
                 case TokenType::RP: return "RightP " + this-> lexeme;
                 case TokenType::NUMBER: return "Number " + this-> lexeme;
+                case TokenType::SPACE: return "Space";
+                case TokenType::UNKNOWN: return "Unknown " + this-> lexeme;
             }
         }
 };
 
-class CharFactory {
+class TokenFactory {
+    private:
+        // This runs in O(n) time.
+        // However, by updating CharFactor::getChars() with a post-condition 
+        // to return an ordered list, std::binary_search, which runs in O(logN)
+        // time, can be used instead of linear search, and the running time can
+        // be improved
+        static bool vector_find(std::vector<std::string> v, std::string s){
+            for (auto t: v){
+                if (t == s)
+                    return true;
+            }
+            return false;
+        }
+
     public:
-        static std::vector<char> getChars(TokenType t){
+        static TokenType getType(std::string s){
+            if (vector_find(getTokens(TokenType::BINOP), s))
+                return TokenType::BINOP;
+            else if (vector_find(getTokens(TokenType::LP), s))
+                return TokenType::LP;
+            else if (vector_find(getTokens(TokenType::RP), s))
+                return TokenType::RP;
+            else if (s.find_first_not_of("0123456789") == std::string::npos)
+                return TokenType::NUMBER;
+            else if (s.find_first_not_of(' ') == std::string::npos)
+                return TokenType::SPACE;
+            else
+                return TokenType::UNKNOWN;
+        }
+
+        static std::vector<std::string> getTokens(TokenType t){
             switch (t) {
                 case TokenType::BINOP:
-                    return {'+','-','*','/'};
+                    return {"+","-","*","/"};
                 case TokenType::NUMBER:
-                    return{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+                    return{ "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
                 case TokenType::LP:
-                    return{'('};
+                    return{"("};
                 case TokenType::RP:
-                    return {')'};
-                default:
+                    return {")"};
+                case TokenType::SPACE:
+                case TokenType::UNKNOWN:
                     return {};
             }
         }

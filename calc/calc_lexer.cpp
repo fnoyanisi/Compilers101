@@ -29,42 +29,33 @@
 #include "calc_exception.h"
 #include "calc.h"
 
-// This runs in O(n) time.
-// However, by updating CharFactor::getChars() with a post-condition 
-// to return an ordered list, std::binary_search, which runs in O(logN)
-// time, can be used instead of linear search, and the running time can
-// be improved
-bool vector_find(std::vector<char> v, char c){
-    for (auto a: v){
-        if (a == c)
-            return true;
-    }
-    return false;
-}
-
+// This lexer uses the 'Principle of Longest Substring', i.e.
+// Briefly stated, given a choice between two interpretations, it 
+// always chooses the longest one.
 void lexer(std::string line, std::vector<Token>& tokens){
     int index = 0;
+    std::string lexeme("");
+    TokenType type = TokenType::UNKNOWN;
 
     for(char c: line){
-        if (!std::isspace(c)) {
-            if (vector_find(CharFactory::getChars(TokenType::BINOP), c))
-                tokens.push_back(Token(c, TokenType::BINOP));
-            else if (vector_find(CharFactory::getChars(TokenType::LP), c))
-                tokens.push_back(Token(c, TokenType::LP));
-            else if (vector_find(CharFactory::getChars(TokenType::RP), c))
-                tokens.push_back(Token(c, TokenType::RP));
-            else if (vector_find(CharFactory::getChars(TokenType::NUMBER), c)){
-                // To account numbers with more than one digit
-                if (!tokens.empty() && tokens.back().type == TokenType::NUMBER) {
-                    tokens.back().lexeme.append(1,c);
-                } else {
-                    tokens.push_back(Token(c, TokenType::NUMBER));
-                }
-            }
-            else
-                throw CalcException(index, "Unknown character");
+        std::string tmp_lexeme = lexeme + c;
+        TokenType tmp_type = TokenFactory::getType(tmp_lexeme);
+
+        if (tmp_type == TokenType::UNKNOWN || tmp_type == TokenType::SPACE) {
+            if (type == TokenType::UNKNOWN)
+                throw CalcException(index-1, "Unknown character");
+
+            tokens.push_back(Token(lexeme, type));
+
+            lexeme = c;
+            type = TokenFactory::getType(lexeme);
+        } else {
+            lexeme = tmp_lexeme;
+            type = tmp_type;
         }
 
         index++;
     }
+
+    tokens.push_back(Token(lexeme, type));
 }
