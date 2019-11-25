@@ -29,8 +29,9 @@
 #include <string>
 #include <vector>
 
-enum class TokenType {BINOP, LP, RP, NUMBER, SPACE, UNKNOWN};
+enum class TokenType {BINOPL, BINOPH, LP, RP, NUMBER, SPACE, UNKNOWN};
 
+// This class represents each token created by the lexer
 class Token {
     public:
         std::vector<char> values;
@@ -48,7 +49,8 @@ class Token {
 
         std::string str(){
             switch(this->type) {
-                case TokenType::BINOP: return "BinOp " + this-> lexeme;
+                case TokenType::BINOPL: return "BinOpL " + this-> lexeme;
+                case TokenType::BINOPH: return "BinOpH " + this-> lexeme;
                 case TokenType::LP: return "LeftP " + this-> lexeme;
                 case TokenType::RP: return "RightP " + this-> lexeme;
                 case TokenType::NUMBER: return "Number " + this-> lexeme;
@@ -75,8 +77,10 @@ class TokenFactory {
 
     public:
         static TokenType getType(std::string s){
-            if (vector_find(getTokens(TokenType::BINOP), s))
-                return TokenType::BINOP;
+            if (vector_find(getTokens(TokenType::BINOPL), s))
+                return TokenType::BINOPL;
+            else if (vector_find(getTokens(TokenType::BINOPH), s))
+                return TokenType::BINOPH;
             else if (vector_find(getTokens(TokenType::LP), s))
                 return TokenType::LP;
             else if (vector_find(getTokens(TokenType::RP), s))
@@ -91,8 +95,10 @@ class TokenFactory {
 
         static std::vector<std::string> getTokens(TokenType t){
             switch (t) {
-                case TokenType::BINOP:
-                    return {"+","-","*","/"};
+                case TokenType::BINOPL:
+                    return {"+","-"};
+                case TokenType::BINOPH:
+                    return {"*","/"};
                 case TokenType::NUMBER:
                     return{ "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
                 case TokenType::LP:

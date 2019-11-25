@@ -29,9 +29,8 @@
 #include "calc_exception.h"
 #include "calc.h"
 
-// This lexer uses the 'Principle of Longest Substring', i.e.
-// Briefly stated, given a choice between two interpretations, it 
-// always chooses the longest one.
+// This lexer uses 'Principle of Longest Substring'. i.e. given a 
+// choice between two interpretations, it always chooses the longest one.
 void lexer(std::string line, std::vector<Token>& tokens){
     int index = 0;
     std::string lexeme("");
