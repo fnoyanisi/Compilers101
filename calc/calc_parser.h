@@ -33,10 +33,8 @@
 class CalcParser {
     private:
         std::vector<Token>& tokens;
-        std::string op;
         size_t pos;
         Token token;
-        double number;
 
         bool isSpace(Token t) { return t.type == TokenType::SPACE; }
 
@@ -48,11 +46,9 @@ class CalcParser {
                                             [](Token t) { return t.type == TokenType::SPACE; }), 
                                             this->tokens.end());
             this->pos = 0;
-            this->op = "";
-            this->number = 0;
         }
 
-        void match(TokenType);
+        std::string match(TokenType);
         double parseExpression();
         double parseTerm();
         double parseFactor();

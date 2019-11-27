@@ -29,17 +29,15 @@
 // Advances the token pointer, matches a given token and updates 
 // the value of binary operator or the number depedning on the 
 // type of the token
-void CalcParser::match(TokenType t){
+std::string CalcParser::match(TokenType t){
     if (this->token.type == t) {
-        if (t == TokenType::BINOPL || t == TokenType::BINOPH)
-            this->op = this->token.lexeme;
-        else if (t == TokenType::NUMBER)
-            this->number = std::stol(this->token.lexeme);
-
+        std::string lexeme = this->token.lexeme;
         this->token = this->tokens.at(++this->pos);
+        return lexeme;
     } else {
         throw CalcException(Token("", t), this->token);
     }
+    // not reached
 }
 
 // Expr     ::= Term ( BinOpL Term )*
@@ -50,7 +48,7 @@ double CalcParser::parseExpression(){
     left = parseTerm();
 
     while(TokenFactory::getType(this->token.lexeme) == TokenType::BINOPL){
-        match(TokenType::BINOPL);
+        std::string op = match(TokenType::BINOPL);
         right = parseTerm();
         if (op == "+")
             left += right;
@@ -69,7 +67,7 @@ double CalcParser::parseTerm(){
     left = parseFactor();
 
     while(TokenFactory::getType(this->token.lexeme) == TokenType::BINOPH){
-        match(TokenType::BINOPH);
+        std::string op = match(TokenType::BINOPH);
         right = parseFactor();
         if (op == "*")
             left *= right;
@@ -85,8 +83,8 @@ double CalcParser::parseTerm(){
 double CalcParser::parseFactor(){
     double result;
     if (this->token.type == TokenType::NUMBER) {
-        match(TokenType::NUMBER);
-        result = number;
+        std::string number = match(TokenType::NUMBER);
+        result = std::stod(number);
     } else {
         match(TokenType::LP);
         result = parseExpression();
