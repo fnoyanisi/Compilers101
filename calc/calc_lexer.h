@@ -30,8 +30,6 @@
 #include <vector>
 #include "calc.h"
 
-bool VectorFind(std::vector<char>, char);
-
 void CalcLexer(std::string, std::vector<Token>&);
 
 #endif
