@@ -43,8 +43,8 @@ void CalcParser::match(TokenType t){
 }
 
 // Expr     ::= Term ( BinOpL Term )*
-long CalcParser::parseExpression(){
-    long right, left; 
+double CalcParser::parseExpression(){
+    double right, left; 
     
     right = 0;
     left = parseTerm();
@@ -62,8 +62,8 @@ long CalcParser::parseExpression(){
 }
 
 // Term     ::= Factor ( BinOpH Factor )*
-long CalcParser::parseTerm(){
-    long right, left; 
+double CalcParser::parseTerm(){
+    double right, left; 
     
     right = 0;
     left = parseFactor();
@@ -82,8 +82,8 @@ long CalcParser::parseTerm(){
 
 // Factor   ::= '(' Expr ')'
 //          | Number
-long CalcParser::parseFactor(){
-    long result;
+double CalcParser::parseFactor(){
+    double result;
     if (this->token.type == TokenType::NUMBER) {
         match(TokenType::NUMBER);
         result = number;
