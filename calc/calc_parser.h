@@ -26,6 +26,7 @@
 #define CALC_PARSER_H_
 
 #include <string>
+#include <algorithm>
 #include <vector>
 #include "calc.h"
 
@@ -37,8 +38,15 @@ class CalcParser {
         Token token;
         long number;
 
+        bool isSpace(Token t) { return t.type == TokenType::SPACE; }
+
     public:
         CalcParser(std::vector<Token>& t) : tokens(t), token(tokens.at(0)) {
+            // Remove the spaces from the list of tokens
+            this->tokens.erase(std::remove_if(this->tokens.begin(), 
+                                            this->tokens.end(), 
+                                            [](Token t) { return t.type == TokenType::SPACE; }), 
+                                            this->tokens.end());
             this->pos = 0;
             this->op = "";
             this->number = 0;
