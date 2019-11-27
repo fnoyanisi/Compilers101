@@ -29,12 +29,11 @@
 #include <string>
 #include <vector>
 
-enum class TokenType {BINOPL, BINOPH, LP, RP, NUMBER, SPACE, UNKNOWN};
+enum class TokenType {BINOPL, BINOPH, LP, RP, NUMBER, SPACE, UNKNOWN, END};
 
 // This class represents each token created by the lexer
 class Token {
     public:
-        std::vector<char> values;
         TokenType type;
         std::string lexeme;
 
@@ -56,6 +55,7 @@ class Token {
                 case TokenType::NUMBER: return "Number " + this-> lexeme;
                 case TokenType::SPACE: return "Space";
                 case TokenType::UNKNOWN: return "Unknown " + this-> lexeme;
+                case TokenType::END: return "End of Tokens ";
             }
         }
 };
@@ -91,7 +91,7 @@ class TokenFactory {
                 return TokenType::SPACE;
             else
                 return TokenType::UNKNOWN;
-        }
+        }   
 
         static std::vector<std::string> getTokens(TokenType t){
             switch (t) {
@@ -107,6 +107,7 @@ class TokenFactory {
                     return {")"};
                 case TokenType::SPACE:
                 case TokenType::UNKNOWN:
+                case TokenType::END:
                     return {};
             }
         }

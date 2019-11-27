@@ -1,4 +1,4 @@
-// calc_exception.h
+// calc_parser.h
 // Copyright (c) 2019, Fehmi Noyan ISI fnoyanisi@yahoo.com
 // All rights reserved.
 //
@@ -22,38 +22,32 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CALC_EXCEPTION_H_
-#define CALC_EXCEPTION_H_
+#ifndef CALC_PARSER_H_
+#define CALC_PARSER_H_
 
-#include <iostream>
-#include <exception>
+#include <string>
+#include <vector>
 #include "calc.h"
 
-#define BUFSIZE 1024
-
-struct CalcException : public std::exception {
+class CalcParser {
     private:
-        char message[BUFSIZE];
+        std::vector<Token>& tokens;
+        std::string op;
+        size_t pos;
+        Token token;
+        long number;
 
     public:
-        CalcException(int i, std::string m){
-            if (i < 0)
-                snprintf(message, BUFSIZE, "%*s^ %s", i, "", m.c_str());
-            else
-                snprintf(message, BUFSIZE, "%s", m.c_str());
+        CalcParser(std::vector<Token>& t) : tokens(t), token(tokens.at(0)) {
+            this->pos = 0;
+            this->op = "";
+            this->number = 0;
         }
 
-        CalcException(std::string m){
-            CalcException(-1, m);
-        }
-
-        CalcException(Token e, Token f){
-            snprintf(message, BUFSIZE, "Syntax Error : Expecting %s but got %s", e.str().c_str(), f.str().c_str());
-        }
-
-        const char * what () const throw (){
-            return message;
-        }
+        void match(TokenType);
+        long parseExpression();
+        long parseTerm();
+        long parseFactor();
 };
 
 #endif

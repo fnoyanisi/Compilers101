@@ -29,13 +29,20 @@
 
 #include "calc.h"
 #include "calc_lexer.h"
+#include "calc_parser.h"
 #include "calc_exception.h"
+
+void intro(){
+    std::cout << "Type \"v\" to toggle the verbose mode for the lexer or \"quit\" to exit." << std::endl;
+    std::cout << "Enter an expression" << std::endl;
+}
 
 int main(){
     std::vector<Token> tokens;
     std::string input;
+    bool verbose = false;
 
-    std::cout << "Type \"quit\" to exit." << std::endl;
+    intro();
 
     while(true) {
         tokens.clear();
@@ -45,12 +52,24 @@ int main(){
 
         if (input == "quit")
             return 0;
+        else if (input == "v") {
+            verbose = !verbose;
+            std::cout << "verbose mode " << ((verbose)? "on" : "off") << std::endl;
+            continue;
+        }
 
         try {
-            lexer(input, tokens);
+            CalcLexer(input, tokens);
 
-            for (auto t : tokens)
-                std::cout << t.str() << std::endl;
+            if (verbose) {
+                std::cout << "Lexer output : " << std::endl;
+                for (auto t : tokens)
+                    std::cout << t.str() << std::endl;
+            }
+
+            CalcParser calcParser(tokens);
+
+            std::cout << "result : " << calcParser.parseExpression() << std::endl;
 
         } catch (CalcException& e) {
             std::cout << input << std::endl;

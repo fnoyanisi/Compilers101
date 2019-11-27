@@ -31,7 +31,7 @@
 
 // This lexer uses 'Principle of Longest Substring'. i.e. given a 
 // choice between two interpretations, it always chooses the longest one.
-void lexer(std::string line, std::vector<Token>& tokens){
+void CalcLexer(std::string line, std::vector<Token>& tokens){
     int index = 0;
     std::string lexeme("");
     TokenType type = TokenType::UNKNOWN;
@@ -40,6 +40,8 @@ void lexer(std::string line, std::vector<Token>& tokens){
         std::string tmp_lexeme = lexeme + c;
         TokenType tmp_type = TokenFactory::getType(tmp_lexeme);
 
+        // Build the current lexeme until the next char is space or the current token is
+        // an unknown one
         if (tmp_type == TokenType::UNKNOWN || tmp_type == TokenType::SPACE) {
             if (type == TokenType::UNKNOWN)
                 throw CalcException(index-1, "Unknown character");
@@ -57,4 +59,7 @@ void lexer(std::string line, std::vector<Token>& tokens){
     }
 
     tokens.push_back(Token(lexeme, type));
+
+    // Mark the end of the tokens
+    tokens.push_back(Token("$", TokenType::END));
 }
