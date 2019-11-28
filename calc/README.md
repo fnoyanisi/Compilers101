@@ -38,5 +38,18 @@ BinOpL   ::= '+' | '-'
 BinOpH   ::= '*' | '/'
 ```
 
+## Building
+You need to have `cmake` installed to build the program. Once you are in the main director (`calc/`)
+
+```
+$ mkdir build
+$ cd build
+$ cmake ..
+$ cmake --build .
+```
+
 ## TODO
 See the Issues
+
+## LICENSE
+2-Clause BSD license
