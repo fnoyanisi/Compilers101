@@ -1,6 +1,13 @@
 # Compilers101
 Some notes and self-study material about compilers
 
+## Programs
+You will find several small programs written in different languages to practice the theory behind compilers. Some of these programs may be far from complete, but rather written to demonstrate a concept used in compiler construction. Having said that, feel free to send your PRs wherever you find appropriate.
+
+Below is the list of programs in this repository along with a short description.
+
+* ### calc
+Simple arithmetic calculator written to practice lexers and parsers.
 
 ## Reading
 Some good reading material on the subject. 
