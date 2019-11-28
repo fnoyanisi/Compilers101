@@ -26,9 +26,9 @@
 #include "calc_parser.h"
 #include "calc_exception.h"
 
-// Advances the token pointer, matches a given token and updates 
-// the value of binary operator or the number depedning on the 
-// type of the token
+// Advances the token pointer and returns the value of the
+// current token's lexeme. The return value is useful only
+// when TokenType == NUMBER | BINOP
 std::string CalcParser::match(TokenType t){
     if (this->token.type == t) {
         std::string lexeme = this->token.lexeme;
