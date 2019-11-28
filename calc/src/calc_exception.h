@@ -37,7 +37,7 @@ struct CalcException : public std::exception {
 
     public:
         CalcException(int i, std::string m){
-            if (i < 0)
+            if (i >= 0)
                 snprintf(message, BUFSIZE, "%*s^ %s", i, "", m.c_str());
             else
                 snprintf(message, BUFSIZE, "%s", m.c_str());

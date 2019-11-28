@@ -44,7 +44,7 @@ void CalcLexer(std::string line, std::vector<Token>& tokens){
         // an unknown one
         if (tmp_type == TokenType::UNKNOWN || tmp_type == TokenType::SPACE) {
             if (type == TokenType::UNKNOWN)
-                throw CalcException(index-1, "Unknown character");
+                throw CalcException(((index==0)?0:index-1), "Unknown character");
 
             tokens.push_back(Token(lexeme, type));
 
@@ -54,11 +54,13 @@ void CalcLexer(std::string line, std::vector<Token>& tokens){
             lexeme = tmp_lexeme;
             type = tmp_type;
         }
-
         index++;
     }
 
-    tokens.push_back(Token(lexeme, type));
+    if (type == TokenType::UNKNOWN)
+        throw CalcException(((index==0)?0:index-1), "Unknown character");
+    else
+        tokens.push_back(Token(lexeme, type));
 
     // Mark the end of the tokens
     tokens.push_back(Token("$", TokenType::END));
