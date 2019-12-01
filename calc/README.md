@@ -5,7 +5,7 @@ A simple arithmetic calculator program to practice the basics of compilers. This
 
 The code is meant to be explanatory rather than using the best practactices at times.
 
-Two main sources were used for this practice: [Scott Gordon's lecture notes on Computing Theory and Programming Languages](https://athena.ecs.csus.edu/~gordonvs/135/resources/) (till the point where the lexer is implemented), and [Douglas W. Jones' lecture notes on Compile Construction](http://homepage.divms.uiowa.edu/~jones/compiler/notes/) (for the parser). You may also find [Federico Tomasetti's Guide to Parsing](https://tomassetti.me/guide-parsing-algorithms-terminology/) an interesting read.
+Two main sources were used for this practice: [Scott Gordon's lecture notes on Computing Theory and Programming Languages](https://athena.ecs.csus.edu/~gordonvs/135/resources/), and [Douglas W. Jones' lecture notes on Compiler Construction, especially the ones covering _Recursive Descent Parsers_](http://homepage.divms.uiowa.edu/~jones/compiler/notes/). You may also find [Federico Tomasetti's Guide to Parsing](https://tomassetti.me/guide-parsing-algorithms-terminology/) an interesting read.
 
 ## Grammar 
 The calculator lacks support for some arithmetic operations, such as the exponentiation and being able to parse negative numbers. However, implementing these features is trivial and only requires a couple of more production rules in the grammar. 
