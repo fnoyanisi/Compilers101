@@ -7,6 +7,15 @@ The code is meant to be explanatory rather than using the best practactices at t
 
 Two main sources were used for this practice: [Scott Gordon's lecture notes on Computing Theory and Programming Languages](https://athena.ecs.csus.edu/~gordonvs/135/resources/), and [Douglas W. Jones' lecture notes on Compiler Construction, especially the ones covering _Recursive Descent Parsers_](http://homepage.divms.uiowa.edu/~jones/compiler/notes/). You may also find [Federico Tomasetti's Guide to Parsing](https://tomassetti.me/guide-parsing-algorithms-terminology/) an interesting read.
 
+## Implementation Notes
+Usage of principle of the longest substring helps the lexer to tackle the ambiguity in the grammar. This is a known and used technique in compilers & interpreters.
+
+An alternative implementation could use a state table rather than a railroad diagram to implement the lexer and the parser.
+
+In a more ideal implementation, instead of having completely seperate lexing and parsing stages, one could have a `CalcLexer` class and a `CalcLexer::advance()` method that would be invoked by `CalcParser` to get the next token identified by the lexer.
+
+Also, the current implementation does not make use of the `end-of-file` token, which is used to verify the integrity of the data read from the cource file.
+
 ## Grammar 
 The calculator lacks support for some arithmetic operations, such as the exponentiation and being able to parse negative numbers. However, implementing these features is trivial and only requires a couple of more production rules in the grammar. 
 
