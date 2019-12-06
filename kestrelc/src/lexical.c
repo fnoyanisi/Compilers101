@@ -1,5 +1,5 @@
 /*-
- * kestrelc.c
+ * lexical.c
  * Copyright (c) 2019 Fehmi Noyan Isi
  * All rights reserved.
  *
@@ -25,9 +25,16 @@
  */
 
 #include <stdio.h>
+#include "lexical.h"
 
-int main(int argc, char **argv) {
-    printf("to be implemented\n");
+ void lex_open(char *f) {
 
-    return 0;
-}
+ }
+
+ void lex_advance() {
+
+ }
+
+ void lex_put(lexeme *l, FILE *f) {
+
+ }

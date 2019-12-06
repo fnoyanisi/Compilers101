@@ -34,8 +34,8 @@
      uint32_t value;
  } lexeme;
 
- extern lexeme lex_this;    /* the current lexeme */
- extern lexeme lex_next;    /* the next lexeme */
+lexeme lex_this;    /* the current lexeme */
+lexeme lex_next;    /* the next lexeme */
 
  void lex_open(char *f);
  void lex_advance();
