@@ -1,59 +1,61 @@
-# calc : simple and interactive arithmetic calculator
+# kestrelc : Kestrel Programming Language Compiler
 
 ## Summary
-A simple arithmetic calculator program to practice the basics of compilers. This program implements a very simple compiler front-end using a separate lexer and a parser.
+Kestrel is a simple programming language designed as a target for a [compiler construction course](http://homepage.divms.uiowa.edu/~jones/compiler/) offered in University of Iowa by Douglas W. Jones. You can read more about the goals of Kestrel programming language from [this page](http://homepage.divms.uiowa.edu/~jones/compiler/kestrel/goals.shtml).
 
-The code is meant to be explanatory rather than using the best practactices at times.
-
-Two main sources were used for this practice: [Scott Gordon's lecture notes on Computing Theory and Programming Languages](https://athena.ecs.csus.edu/~gordonvs/135/resources/), and [Douglas W. Jones' lecture notes on Compiler Construction, especially the ones covering _Recursive Descent Parsers_](http://homepage.divms.uiowa.edu/~jones/compiler/notes/). You may also find [Federico Tomasetti's Guide to Parsing](https://tomassetti.me/guide-parsing-algorithms-terminology/) an interesting read.
+This implementation of Kestrel compiler closely follows the concepts taught in the course (hence, if you follow the lecture notes, you should be able to understand the code) but there are some slight differences at times. For instance, [Unity](http://www.throwtheswitch.org/unity), a unit test framework for C, is used to write unite tests or the build uses [cmake](https://cmake.org/overview/) rather than traditional UNIX Makefiles.
 
 ## Implementation Notes
-Usage of principle of the longest substring helps the lexer to tackle the ambiguity in the grammar. This is a known and used technique in compilers & interpreters.
-
-An alternative implementation could use a state table rather than a railroad diagram to implement the lexer and the parser.
-
-In a more ideal implementation, instead of having completely seperate lexing and parsing stages, one could have a `CalcLexer` class and a `CalcLexer::advance()` method that would be invoked by `CalcParser` to get the next token identified by the lexer.
-
-Also, the current implementation does not make use of the `end-of-file` token, which is used to verify the integrity of the data read from the cource file.
+TBC
 
 ## Grammar 
-The calculator lacks support for some arithmetic operations, such as the exponentiation and being able to parse negative numbers. However, implementing these features is trivial and only requires a couple of more production rules in the grammar. 
-
-#### BNF Syntax
-```
-<expr> ::= <expr> + <term> | <expr> - <term> | <term>
-<term> ::= <term> * <factor> | <term> / <factor> | <factor>
-<factor> ::= ( <expr> ) | <number>
-<number> ::= <digit> <number> | <digit>
-<digit> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-```
-
-#### EBNF Syntax
-```
-<expr> ::= <term> {<term> (+ | -)} 
-<term> ::= <factor> {<factor> (* | /)} 
-<factor> ::= '(' <expr> ')' | <digit> {<digit>}
-<digit> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-```
-The ENBF grammar used to draw syntax (railroad) diagrams and to the implement the parser is given below. The grammar below, when used in [bottlecaps.de](https://www.bottlecaps.de/rr/ui), gives the railroad diagrams used for the parser. 
-
-```
-Expr     ::= Term (BinOpL Term)*
-Term     ::= Factor (BinOpH Factor)*
-Factor   ::= '(' Expr ')' | Number
-Number   ::= Digit+
-Digit    ::= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
-BinOpL   ::= '+' | '-'
-BinOpH   ::= '*' | '/'
-```
+The ENBF grammar for Kestrel programming language is [here](http://homepage.divms.uiowa.edu/~jones/compiler/kestrel/kestrelEBNF.txt)
 
 ## Building
-You need to have `cmake` installed to build the program. Once you are in the main director (`calc/`)
+You need to have `cmake` installed to build the project. If you want to run the unit tests, you also need the checkout the [Unity framework from github](https://github.com/ThrowTheSwitch/Unity)
+
+Once you are in the main director (`kestrelc/`)
 
 ```
+$ git clone https://github.com/ThrowTheSwitch/Unity.git unity
 $ mkdir build
+```
+
+Your directory structure must be 
+
+```
+kestrelc
+     |
+     +-- build
+     |
+     +-- src
+     |
+     +-- test
+     |
+     +-- unity
+     |
+     +-- CMakeLists.txt
+     |
+     +-- LICENSE
+     |
+     +-- README.md
+```
+
+Note, if you do not want to build the unit tests, you do not need to checkout the `Unity` framework, but the `test` directory will still be there in either case.
+
+To build the project with test
+
+```
 $ cd build
-$ cmake ..
+$ cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=yes ..
+$ cmake --build .
+```
+
+or witout tests
+
+```
+$ cd build
+$ cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=no ..
 $ cmake --build .
 ```
 
