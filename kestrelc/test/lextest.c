@@ -25,35 +25,19 @@
  */
 
 #include <stdio.h>
-#include <string.h>
-#include "lexical.h"
+#include <unity.h>
 
-#define BUFLEN  256
+void setUp(void){}
 
-void usage(){
-    fprintf(stdout, "usage : lextest [input file name]\n");
+void tearDown(void){}
+
+void test_1(void) {
+    /* this test will pass */
+    TEST_ASSERT_EQUAL_INT(5, 5);
 }
 
-int main(int argc, char **argv) {
-    char buf[BUFLEN];
-    size_t ret;
-    char *infile;
-
-    if (argc == 1) {
-        infile = NULL;
-    } else if (argc == 2) {
-        infile = strdup(argv[1]);
-    } else {
-        usage();
-        return 1;
-    }
-
-    lex_open(infile);
-    do {
-        lex_put(&lex_this, stdout);
-        puts("\n");
-        lex_advance();
-    } while (lex_this.type == ENDFILE);
-
-    return 0;
+int main(int argc, const char * argv[]) {
+  UNITY_BEGIN();
+    RUN_TEST(test_1);
+  return UNITY_END();
 }

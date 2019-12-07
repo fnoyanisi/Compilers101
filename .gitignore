@@ -1,4 +1,5 @@
 build/
+unity/
 .vscode
 .DS_Store
 a.out
