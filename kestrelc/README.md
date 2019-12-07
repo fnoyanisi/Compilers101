@@ -3,7 +3,7 @@
 ## Summary
 Kestrel is a simple programming language designed as a target for a [compiler construction course](http://homepage.divms.uiowa.edu/~jones/compiler/) offered in University of Iowa by Douglas W. Jones. You can read more about the goals of Kestrel programming language from [this page](http://homepage.divms.uiowa.edu/~jones/compiler/kestrel/goals.shtml).
 
-This implementation of Kestrel compiler closely follows the concepts taught in the course (hence, if you follow the lecture notes, you should be able to understand the code) but there are some slight differences at times. For instance, [Unity](http://www.throwtheswitch.org/unity), a unit test framework for C, is used to write unite tests or the build uses [cmake](https://cmake.org/overview/) rather than traditional UNIX Makefiles.
+This implementation of Kestrel compiler closely follows the concepts taught in the course (hence, if you follow the lecture notes, you should be able to understand the code) but there are some slight differences at times. For instance, [Unity](http://www.throwtheswitch.org/unity), a unit test framework for C, is used to write unit tests or [cmake](https://cmake.org/overview/) rather than traditional UNIX Makefiles is used to automate the build.
 
 ## Implementation Notes
 TBC
