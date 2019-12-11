@@ -24,9 +24,12 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdint.h>
 #include <stdio.h>
+#include <stdint.h>
 
+/******************************************************************************
+ * character identification
+ *****************************************************************************/
 typedef enum {
     OTHER=0, WHITESPACE=1, LETTER=2, DIGIT=4, PUNCTUATION=8
 } char_type;
@@ -71,6 +74,101 @@ static const char_type char_class[256] = {
 
 #define ISCLASS(ch,class) (char_class[ch]&(class))
 
+/******************************************************************************
+ * punctuation character type
+ *****************************************************************************/
+typedef enum {
+    PT_SEMI     /* ; */,    PT_EQUALS   /* = */,    PT_COLON    /* : */,
+    PT_LPAREN   /* ( */,    PT_LBRAKT   /* [ */,    PT_LBRACE   /* { */,
+    PT_RPAREN   /* ) */,    PT_RBRAKT   /* ] */,    PT_RBRACE   /* } */,
+    PT_COMMA    /* , */,    PT_ATSIGN   /* @ */,    PT_ELIPS    /* .. */,
+    PT_NOTEQL   /* /= */,   PT_GT       /* > */,    PT_GE       /* >= */,
+    PT_LT       /* < */,    PT_LE       /* <= */,   PT_PLUS     /* + */,
+    PT_MINUS    /* - */,    PT_TIMES    /* * */,    PT_DIV      /* / */,
+    PT_MOD      /* % */,    PT_AND      /* & */,    PT_OR       /* | */,
+    PT_NOT      /* ~ */,    PT_DOT      /* . */,    PT_NONE
+} punc_type;
+
+#define SMI PT_SEMI
+#define EQU PT_EQUALS
+#define COL PT_COLON
+#define LPR PT_LPAREN
+#define LBR PT_LBRAKT
+#define LBC PT_LBRACE
+#define RPR PT_RPAREN
+#define RBR PT_RBRAKT
+#define RBC PT_RBRACE
+#define COM PT_COMMA
+#define ATS PT_ATSIGN
+#define ELS PT_ELIPS
+#define GT  PT_GT
+#define LT  PT_GE
+#define PLS PT_PLUS
+#define MNS PT_MINUS
+#define TMS PT_TIMES
+#define DIV PT_DIV
+#define MOD PT_MOD
+#define AND PT_AND
+#define OR  PT_OR
+#define NOT PT_NOT
+#define DOT PT_DOT
+#define NON PT_NONE
+static const punc_type punc_class[256] = {
+  /*NUL SOH STX ETX EOT ENQ ACK BEL BS  HT  LF  VT  FF  CR  SO  SI */ 
+    NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,
+  /*DLE DC1 DC2 DC3 DC4 NAK SYN ETB CAN EM  SUB ESC FS  GS  RS  US */ 
+    NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,
+  /*     !   "   #   $   %   &   '   (   )   *   +   ,   -   .   / */ 
+    NON,NON,NON,NON,NON,NON,AND,NON,LPR,RPR,TMS,PLS,COM,MNS,DOT,DIV,
+  /* 0   1   2   3   4   5   6   7   8   9   :   ;   <   =   >   ? */ 
+    NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,COL,SMI,LT ,EQU,GT ,NON,
+  /* @   A   B   C   D   E   F   G   H   I   J   K   L   M   N   O */ 
+    ATS,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,
+  /* P   Q   R   S   T   U   V   W   X   Y   Z   [   \   ]   ^   _ */ 
+    NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,LBR,NON,RBR,NON,NON,
+  /* `   a   b   c   d   e   f   g   h   i   j   k   l   m   n   o */ 
+    NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,
+  /* p   q   r   s   t   u   v   w   x   y   z   {   |   }   ~  DEL*/ 
+    NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,LBC,OR ,RBC,NOT,NON,
+  /* beyond ASCII */
+    NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON, 
+    NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON, 
+    NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON, 
+    NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON, 
+    NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON, 
+    NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON, 
+    NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON, 
+    NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON
+};
+#undef SMI
+#undef EQU
+#undef COL
+#undef LPR
+#undef LBR
+#undef LBC
+#undef RPR
+#undef RBR
+#undef RBC
+#undef COM
+#undef ATS
+#undef ELS
+#undef GT
+#undef LT
+#undef PLS
+#undef MNS
+#undef TMS
+#undef DIV
+#undef MOD
+#undef AND
+#undef OR
+#undef NOT
+#undef DOT
+#undef NON
+
+/******************************************************************************
+ * lexeme related definitions 
+ *****************************************************************************/
+
 typedef enum {IDENT, KEYWORD, NUMBER, STRING, PUNC, ENDFILE} lex_types;
 
 typedef struct lexeme_t {
@@ -80,6 +178,10 @@ typedef struct lexeme_t {
 
 lexeme lex_this;    /* the current lexeme */
 lexeme lex_next;    /* the next lexeme */
+
+/******************************************************************************
+ * function declarations
+ *****************************************************************************/
 
 char get_lex_ch(void);
 void lex_open(const char *f);
