@@ -25,16 +25,62 @@
  */
 
 #include <stdio.h>
+#include <string.h>
+#include "kestrelc.h"
 #include "lexical.h"
 
- void lex_open(char *f) {
+static char ch;         /* current char not yet part of a lexeme */
+static FILE *infile;    /* the input file */
 
- }
+/* helper function to get the state of the lexer */
+char get_lex_ch(void){
+    return ch;
+}
 
- void lex_advance() {
+void lex_open(const char *f) {
+    if (f == NULL) {
+         /* for the ability to pipe the source from stdin */
+        infile = stdin;
+    } else if ((infile = fopen(f,"r")) == NULL) {
+        exit_error(f);
+    } 
 
- }
+    if ((ch = fgetc(infile)) == EOF && ferror(infile)) {
+        exit_error(f);
+    }
+}
 
- void lex_put(lexeme *l, FILE *f) {
+void lex_advance() {
+    lex_this = lex_next;
 
- }
+    /* skip whitespace */
+    while(ISCLASS(ch, WHITESPACE)) {
+        if ((ch = fgetc(infile)) == EOF && ferror(infile)) {
+            if (ferror(infile)) {
+                exit_error(NULL);
+            }
+        }
+    }
+
+    /* =BUG= how do we handle comments? */
+
+    /* decimal digit */
+    if ((ch >= '0') && (ch <= '9')) {
+        lex_next.type = NUMBER;
+        lex_next.value = 0;
+
+        /* accumulate value of the digit */
+        do {
+            lex_next.value = (lex_next.value * 10) + (ch - '0');
+            /* =BUG= what if there is an overflow? */
+            ch = fgetc(infile);
+        } while ((ch >= '0') && (ch <= '9'));
+        /* =BUG= what if a # leads into an odd number base? */
+    } else {
+         printf("none\n");
+    }
+}
+
+void lex_put(lexeme *l, FILE *f) {
+
+}

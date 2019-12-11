@@ -1,5 +1,5 @@
 /*-
- * lextest.c
+ * kestrelc.h
  * Copyright (c) 2019 Fehmi Noyan Isi
  * All rights reserved.
  *
@@ -26,53 +26,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <unity.h>
-#include <lexical.h>
 
-static FILE *fd;
-static const char *test_file = "test.kl";
-static const char *buf = "putstr( \"Hello world\"+LF, output )";
-
-void setUp(void){
-  size_t len = strlen(buf);
-
-  /* check if the file exists. 
-  * there could be a better way of doing this in a portable way 
-  */
-  if ((fd = fopen(test_file, "r")) != NULL) {
-    fclose(fd);
-    remove(test_file);
-  }
-
-  if ((fd = fopen(test_file, "w")) == NULL){
-    perror(test_file);
+void exit_error(const char *s){
+    perror(s);
     exit(1);
-  }
-
-  if (fwrite(buf, sizeof(char), len, fd) != len) {
-    fclose(fd);
-    perror(test_file);
-    exit(1);
-  }
-
-  fclose(fd);
-}
-
-void tearDown(void){
-  if (remove(test_file) != 0) {
-    perror(test_file);
-    exit(1);
-  }
-}
-
-void test_lex_open(void) {
-  lex_open(test_file);
-  TEST_ASSERT_EQUAL_CHAR(*buf, get_lex_ch());
-}
-
-int main(int argc, const char * argv[]) {
-  UNITY_BEGIN();
-    RUN_TEST(test_lex_open);
-  return UNITY_END();
 }
