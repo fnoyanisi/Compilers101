@@ -25,12 +25,15 @@
  */
 
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
+#include <errno.h>
 #include "kestrelc.h"
 #include "lexical.h"
 
 static char ch;         /* current char not yet part of a lexeme */
 static FILE *infile;    /* the input file */
+static int in_comment;
 
 /* helper function to get the state of the lexer */
 char get_lex_ch(void){
@@ -48,6 +51,8 @@ void lex_open(const char *f) {
     if ((ch = fgetc(infile)) == EOF && ferror(infile)) {
         exit_error(f);
     }
+
+    in_comment = 0;
 }
 
 void lex_advance() {
@@ -55,7 +60,7 @@ void lex_advance() {
 
     /* skip whitespace */
     while(ISCLASS(ch, WHITESPACE)) {
-        if ((ch = fgetc(infile)) == EOF && ferror(infile)) {
+        if ((ch = fgetc(infile)) == EOF) {
             if (ferror(infile)) {
                 exit_error(NULL);
             }
@@ -68,14 +73,41 @@ void lex_advance() {
     if ((ch >= '0') && (ch <= '9')) {
         lex_next.type = NUMBER;
         lex_next.value = 0;
-
-        /* accumulate value of the digit */
+        
         do {
-            lex_next.value = (lex_next.value * 10) + (ch - '0');
-            /* =BUG= what if there is an overflow? */
+            /* check for overflow */
+            if (lex_next.value > ((UINT32_MAX - (ch - '0')) / 10)){
+                errno = ERANGE;
+                exit_error("Integer overflow :");
+            } else {
+            /* accumulate value of the digit */
+                lex_next.value = (lex_next.value * 10) + (ch - '0');
+            }
             ch = fgetc(infile);
         } while ((ch >= '0') && (ch <= '9'));
         /* =BUG= what if a # leads into an odd number base? */
+    /* punctuation */
+    } else if (ISCLASS(ch, PUNCTUATION)) { 
+        lex_next.type = PUNC;
+
+        if (lex_this.type == PUNC && lex_this.value == PT_DIV && ch == '=')
+            lex_this.value = PT_NOTEQL; /* /= */
+        else if (lex_this.type == PUNC && lex_this.value == PT_GT && ch == '=')
+            lex_this.value = PT_GE;     /* >= */
+        else if (lex_this.type == PUNC && lex_this.value == PT_LT && ch == '=')
+            lex_this.value = PT_LE;     /* <= */
+        else       
+            lex_next.value = punc_class[ch];
+
+        if ((ch = fgetc(infile)) == EOF) {
+            if (ferror(infile)) {
+                fclose(infile);
+                exit_error(NULL);
+            } else {
+                /* end of file */
+                return;
+            }
+        }
     } else {
          printf("none\n");
     }
