@@ -34,6 +34,7 @@
 static char ch;         /* current char not yet part of a lexeme */
 static FILE *infile;    /* the input file */
 static int in_comment;
+static int in_string;
 
 /* helper function to get the state of the lexer */
 char get_lex_ch(void){
@@ -53,6 +54,7 @@ void lex_open(const char *f) {
     }
 
     in_comment = 0;
+    in_string = 0;
 }
 
 void lex_advance() {
@@ -68,6 +70,18 @@ void lex_advance() {
     }
 
     /* =BUG= how do we handle comments? */
+
+    /* handle comments */
+    if (lex_this.type == PUNC && lex_this.value == PT_MINUS && ch == '-')
+        in_comment = 1;
+    while(ch != '\n' && in_comment) {
+        if ((ch = fgetc(infile)) == EOF) {
+            if (ferror(infile)) {
+                exit_error(NULL);
+            }
+        }
+    }
+    in_comment = 0;
 
     /* decimal digit */
     if ((ch >= '0') && (ch <= '9')) {
