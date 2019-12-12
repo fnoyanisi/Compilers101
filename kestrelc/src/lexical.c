@@ -30,11 +30,13 @@
 #include <errno.h>
 #include "kestrelc.h"
 #include "lexical.h"
+#include "errors.h"
 
 static char ch;         /* current char not yet part of a lexeme */
 static FILE *infile;    /* the input file */
 static int in_comment;
 static int in_string;
+static int line_number;
 
 /* helper function to get the state of the lexer */
 char get_lex_ch(void){
@@ -46,15 +48,18 @@ void lex_open(const char *f) {
          /* for the ability to pipe the source from stdin */
         infile = stdin;
     } else if ((infile = fopen(f,"r")) == NULL) {
-        exit_error(f);
+        perror(f);
+        exit(EXIT_FAILURE);
     } 
 
     if ((ch = fgetc(infile)) == EOF && ferror(infile)) {
-        exit_error(f);
+        perror(f);
+        exit(EXIT_FAILURE);
     }
 
     in_comment = 0;
     in_string = 0;
+    line_number = 0;
 }
 
 void lex_advance() {
@@ -64,7 +69,8 @@ void lex_advance() {
     while(ISCLASS(ch, WHITESPACE)) {
         if ((ch = fgetc(infile)) == EOF) {
             if (ferror(infile)) {
-                exit_error(NULL);
+                perror(NULL);
+                exit(EXIT_FAILURE);
             }
         }
     }
@@ -77,7 +83,8 @@ void lex_advance() {
     while(ch != '\n' && in_comment) {
         if ((ch = fgetc(infile)) == EOF) {
             if (ferror(infile)) {
-                exit_error(NULL);
+                perror(NULL);
+                exit(EXIT_FAILURE);
             }
         }
     }
@@ -91,8 +98,7 @@ void lex_advance() {
         do {
             /* check for overflow */
             if (lex_next.value > ((UINT32_MAX - (ch - '0')) / 10)){
-                errno = ERANGE;
-                exit_error("Integer overflow :");
+                error_warn(ER_TOOBIG, line_number);
             } else {
             /* accumulate value of the digit */
                 lex_next.value = (lex_next.value * 10) + (ch - '0');
@@ -116,13 +122,15 @@ void lex_advance() {
         if ((ch = fgetc(infile)) == EOF) {
             if (ferror(infile)) {
                 fclose(infile);
-                exit_error(NULL);
+                perror(NULL);
+                exit(EXIT_FAILURE);
             } else {
                 /* end of file */
                 return;
             }
         }
-    } else {
+    /* strings */
+    } else if (ch == '\'' || ch == '\"'){
          printf("none\n");
     }
 }

@@ -1,5 +1,5 @@
 /*-
- * kestrelc.h
+ * errors.c
  * Copyright (c) 2019 Fehmi Noyan Isi
  * All rights reserved.
  *
@@ -26,3 +26,18 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "errors.h"
+
+static const char *message[] = {
+    /* ER_BADFILE */    "Cannot open input file",
+    /* ER_TOOBIG*/      "Value too large"
+};
+
+void error_fatal(error_message er, int line){
+    fprintf(stderr, "Fatal error on line %d: %s", line, message[er]);
+    exit(EXIT_FAILURE);
+}
+
+void error_warn(error_message er, int line){
+    fprintf(stderr, "Error on line %d: %s", line, message[er]);
+}

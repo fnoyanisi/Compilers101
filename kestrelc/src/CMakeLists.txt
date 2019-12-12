@@ -1,6 +1,6 @@
 project(kestrelc_prog)
 
-set(LEXICAL_SOURCES lexical.c lexical.h)
+set(LEXICAL_SOURCES lexical.c errors.c lexical.h errors.h)
 
 add_library(lexical STATIC ${LEXICAL_SOURCES})
 target_include_directories(lexical PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

@@ -1,5 +1,5 @@
 /*-
- * kestrelc.h
+ * errors.h
  * Copyright (c) 2019 Fehmi Noyan Isi
  * All rights reserved.
  *
@@ -24,5 +24,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+typedef enum {
+    ER_BADFILE,
+    ER_TOOBIG
+} error_message;
+
+void error_fatal(error_message, int line);
+void error_warn(error_message, int line);
+void error_gotbutwant(char *got, char *want);
