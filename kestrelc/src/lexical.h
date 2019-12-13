@@ -168,7 +168,7 @@ static const punc_type punc_class[256] = {
 /******************************************************************************
  * lexeme related definitions 
  *****************************************************************************/
-typedef enum {IDENT, KEYWORD, NUMBER, STRING, PUNC, ENDFILE} lex_types;
+typedef enum {IDENT, KEYWORD, NUMBER, STRING, PUNCT, ENDFILE} lex_types;
 
 typedef struct lexeme_t {
     lex_types type;
@@ -185,4 +185,4 @@ lexeme lex_next;    /* the next lexeme */
 char get_lex_ch(void);
 void lex_open(const char *f);
 void lex_advance();
-void lex_put(lexeme *l, FILE *f);
+void lex_put(lexeme l, FILE *f);

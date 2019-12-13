@@ -28,15 +28,28 @@
 #include <stdint.h>
 #include <string.h>
 #include <errno.h>
+#include <inttypes.h>
 #include "kestrelc.h"
 #include "lexical.h"
 #include "errors.h"
 
-static char ch;         /* current char not yet part of a lexeme */
+static int ch;          /* current char not yet part of a lexeme */
 static FILE *infile;    /* the input file */
 static int in_comment;
 static int in_string;
 static int line_number;
+
+static const char *punc_name[]= {
+    /* PT_SEMI   */ ";",  /* PT_EQUALS */ "=",  /* PT_COLON  */  ":",
+    /* PT_LPAREN */ "(",  /* PT_LBRAKT */ "[",  /* PT_LBRACE */  "{",
+    /* PT_RPAREN */ ")",  /* PT_RBRAKT */ "]",  /* PT_RBRACE */  "}",
+    /* PT_COMMA  */ ",",  /* PT_ATSIGN */ "@",  /* PT_ELIPS  */  "..",
+    /* PT_NOTEQL */ "/=", /* PT_GT     */ ">",  /* PT_GE     */  ">=",
+    /* PT_LT     */ "<",  /* PT_LE     */ "<=", /* PT_PLUS   */  "+",
+    /* PT_MINUS  */ "-",  /* PT_TIMES  */ "*",  /* PT_DIV    */  "/",
+    /* PT_MOD    */ "%",  /* PT_AND    */ "&",  /* PT_OR     */  "|",
+    /* PT_NOT    */ "~",  /* PT_DOT    */ ".",  /* PT_NONE   */  "?WHAT?"
+};
 
 /* helper function to get the state of the lexer */
 char get_lex_ch(void){
@@ -52,14 +65,11 @@ void lex_open(const char *f) {
         exit(EXIT_FAILURE);
     } 
 
-    if ((ch = fgetc(infile)) == EOF && ferror(infile)) {
-        perror(f);
-        exit(EXIT_FAILURE);
-    }
-
+    ch = fgetc(infile);
     in_comment = 0;
     in_string = 0;
-    line_number = 0;
+    line_number = 1;
+    lex_advance();
 }
 
 void lex_advance() {
@@ -78,7 +88,7 @@ void lex_advance() {
     /* =BUG= how do we handle comments? */
 
     /* handle comments */
-    if (lex_this.type == PUNC && lex_this.value == PT_MINUS && ch == '-')
+    if (lex_this.type == PUNCT && lex_this.value == PT_MINUS && ch == '-')
         in_comment = 1;
     while(ch != '\n' && in_comment) {
         if ((ch = fgetc(infile)) == EOF) {
@@ -90,8 +100,13 @@ void lex_advance() {
     }
     in_comment = 0;
 
-    /* decimal digit */
-    if ((ch >= '0') && (ch <= '9')) {
+    
+    if (ch == EOF) {
+        /* end of file */ 
+        lex_next.type = ENDFILE;
+        lex_next.value = 0;
+    } else if ((ch >= '0') && (ch <= '9')) {
+        /* decimal digit */
         lex_next.type = NUMBER;
         lex_next.value = 0;
         
@@ -106,15 +121,15 @@ void lex_advance() {
             ch = fgetc(infile);
         } while ((ch >= '0') && (ch <= '9'));
         /* =BUG= what if a # leads into an odd number base? */
-    /* punctuation */
     } else if (ISCLASS(ch, PUNCTUATION)) { 
-        lex_next.type = PUNC;
+        /* punctuation */
+        lex_next.type = PUNCT;
 
-        if (lex_this.type == PUNC && lex_this.value == PT_DIV && ch == '=')
+        if (lex_this.type == PUNCT && lex_this.value == PT_DIV && ch == '=')
             lex_this.value = PT_NOTEQL; /* /= */
-        else if (lex_this.type == PUNC && lex_this.value == PT_GT && ch == '=')
+        else if (lex_this.type == PUNCT && lex_this.value == PT_GT && ch == '=')
             lex_this.value = PT_GE;     /* >= */
-        else if (lex_this.type == PUNC && lex_this.value == PT_LT && ch == '=')
+        else if (lex_this.type == PUNCT && lex_this.value == PT_LT && ch == '=')
             lex_this.value = PT_LE;     /* <= */
         else       
             lex_next.value = punc_class[ch];
@@ -129,12 +144,27 @@ void lex_advance() {
                 return;
             }
         }
-    /* strings */
     } else if (ch == '\'' || ch == '\"'){
-         printf("none\n");
+        /* strings */
+        printf("none\n");
     }
 }
 
-void lex_put(lexeme *l, FILE *f) {
-
+void lex_put(lexeme lex, FILE *f) {
+    /* reconstruct and output lex to file f */
+    switch (lex.type) {
+        case IDENT:
+        case KEYWORD:
+        /* =BUG= missing code for these lexeme types */
+            break;
+        case NUMBER:
+            fprintf(f, "%" PRId32, lex.value);
+        case PUNCT:
+            fputs(punc_name[lex.value],f);
+            break;
+        case STRING:
+        case ENDFILE:
+        /* =BUG= missing code for these lexeme types */
+            break;
+    }
 }
