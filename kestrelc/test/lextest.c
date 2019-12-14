@@ -27,16 +27,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include <unity.h>
 #include <lexical.h>
 
 static FILE *fd;
 static const char *test_file = "test.kl";
-static const char *buf = "putstr( \"Hello world\"+LF, output )";
 
-void setUp(void){
+/* helper function to write contents of the test file */
+void test_write(const char *buf){
   size_t len = strlen(buf);
 
+  if ((fd = fopen(test_file, "w")) == NULL){
+    perror(test_file);
+    exit(EXIT_FAILURE);
+  }
+
+  if (fwrite(buf, sizeof(char), len, fd) != len) {
+    fclose(fd);
+    perror(test_file);
+    exit(EXIT_FAILURE);
+  }
+
+  fclose(fd);
+}
+
+void setUp(void){
   /* 
   * check if the file exists. 
   * there could be a better way of doing this in a portable way 
@@ -48,13 +64,7 @@ void setUp(void){
 
   if ((fd = fopen(test_file, "w")) == NULL){
     perror(test_file);
-    exit(1);
-  }
-
-  if (fwrite(buf, sizeof(char), len, fd) != len) {
-    fclose(fd);
-    perror(test_file);
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
   fclose(fd);
@@ -63,29 +73,82 @@ void setUp(void){
 void tearDown(void){
   if (remove(test_file) != 0) {
     perror(test_file);
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 }
 
+/* 
+ * lex_open should sucessfuly read the first char and then call
+ * lex_advance(), hence after calling lex_open(), ch should have
+ * the value of the second char in the buf
+ */
 void test_lex_open(void) {
+  const char *buf = "putstr( \"Hello world\"+LF, output )";
+  test_write(buf);
+
   lex_open(test_file);
-  TEST_ASSERT_EQUAL_CHAR(*buf, get_lex_ch());
+  TEST_ASSERT_EQUAL_CHAR(*(buf+1), get_lex_ch());
+
+  fclose(fd);
 }
 
-void test_lex_advance(){
-  lex_open("test.kl");
-  FILE *f = fopen("unit.kl","w");
-  do {
-    lex_put(&lex_this, f);
-    putchar('\n');
+/* 
+ * the lexer should ignore white spaces and only store the numeric 
+ * values in lex_next.value
+ */
+void test_numeric(){
+  int i;
+  const char *buf = "1 2 3 4 5 6 7 8 9";
+  test_write(buf);
+
+  lex_open(test_file);
+  for (i=1; i < 10; i++) {
+    TEST_ASSERT_EQUAL_INT(i, lex_next.value);
     lex_advance();
-  } while (lex_this.type == ENDFILE);
-  fclose(f);
+  }
+  
+  fclose(fd);
+}
+
+/* 
+ * the lexer should ignore white spaces and only store the punctuation 
+ * characters in lex_next.value
+ */
+void test_punctuation(){
+  int i;
+  const char *buf = "; ( ) , / < - % ~";
+  test_write(buf);
+
+  const char *another_file="another.txt";
+  FILE *another;
+  if ((another = fopen(another_file,"w+"))==NULL){
+    TEST_FAIL_MESSAGE(strerror(errno));
+  }
+
+  /* write output of the lexer to a file */
+  lex_open(test_file);
+  do {
+    lex_put(&lex_this, another);
+    lex_advance();
+  } while (lex_this.type != ENDFILE);
+
+  rewind(another); /* go back to begining of the file */
+  
+  for (i=0; i < strlen(buf); i+=2) {
+    TEST_ASSERT_EQUAL_CHAR(*(buf+i), fgetc(another));
+    lex_advance();
+  }
+  
+  fclose(another);
+  fclose(fd);
+
+  remove(another_file);
 }
 
 int main(int argc, const char * argv[]) {
   UNITY_BEGIN();
     RUN_TEST(test_lex_open);
-    RUN_TEST(test_lex_advance);
+    RUN_TEST(test_numeric);
+    RUN_TEST(test_punctuation);
   return UNITY_END();
 }
