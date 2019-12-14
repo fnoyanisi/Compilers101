@@ -37,7 +37,8 @@ static const char *buf = "putstr( \"Hello world\"+LF, output )";
 void setUp(void){
   size_t len = strlen(buf);
 
-  /* check if the file exists. 
+  /* 
+  * check if the file exists. 
   * there could be a better way of doing this in a portable way 
   */
   if ((fd = fopen(test_file, "r")) != NULL) {
@@ -71,8 +72,20 @@ void test_lex_open(void) {
   TEST_ASSERT_EQUAL_CHAR(*buf, get_lex_ch());
 }
 
+void test_lex_advance(){
+  lex_open("test.kl");
+  FILE *f = fopen("unit.kl","w");
+  do {
+    lex_put(&lex_this, f);
+    putchar('\n');
+    lex_advance();
+  } while (lex_this.type == ENDFILE);
+  fclose(f);
+}
+
 int main(int argc, const char * argv[]) {
   UNITY_BEGIN();
     RUN_TEST(test_lex_open);
+    RUN_TEST(test_lex_advance);
   return UNITY_END();
 }

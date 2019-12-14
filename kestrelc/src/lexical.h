@@ -45,7 +45,7 @@ static const char_type char_class[256] = {
   /*DLE DC1 DC2 DC3 DC4 NAK SYN ETB CAN EM  SUB ESC FS  GS  RS  US */ 
     OTH,OTH,OTH,OTH,OTH,OTH,OTH,OTH,OTH,OTH,OTH,OTH,OTH,OTH,OTH,OTH,
   /*     !   "   #   $   %   &   '   (   )   *   +   ,   -   .   / */ 
-    WIT,OTH,OTH,OTH,OTH,OTH,PUN,OTH,PUN,PUN,PUN,PUN,PUN,PUN,PUN,PUN,
+    WIT,OTH,OTH,OTH,OTH,PUN,PUN,OTH,PUN,PUN,PUN,PUN,PUN,PUN,PUN,PUN,
   /* 0   1   2   3   4   5   6   7   8   9   :   ;   <   =   >   ? */ 
     DIG,DIG,DIG,DIG,DIG,DIG,DIG,DIG,DIG,DIG,PUN,PUN,PUN,PUN,PUN,OTH,
   /* @   A   B   C   D   E   F   G   H   I   J   K   L   M   N   O */ 
@@ -102,7 +102,7 @@ typedef enum {
 #define ATS PT_ATSIGN
 #define ELS PT_ELIPS
 #define GT  PT_GT
-#define LT  PT_GE
+#define LT  PT_LT
 #define PLS PT_PLUS
 #define MNS PT_MINUS
 #define TMS PT_TIMES
@@ -119,7 +119,7 @@ static const punc_type punc_class[256] = {
   /*DLE DC1 DC2 DC3 DC4 NAK SYN ETB CAN EM  SUB ESC FS  GS  RS  US */ 
     NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,
   /*     !   "   #   $   %   &   '   (   )   *   +   ,   -   .   / */ 
-    NON,NON,NON,NON,NON,NON,AND,NON,LPR,RPR,TMS,PLS,COM,MNS,DOT,DIV,
+    NON,NON,NON,NON,NON,MOD,AND,NON,LPR,RPR,TMS,PLS,COM,MNS,DOT,DIV,
   /* 0   1   2   3   4   5   6   7   8   9   :   ;   <   =   >   ? */ 
     NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,COL,SMI,LT ,EQU,GT ,NON,
   /* @   A   B   C   D   E   F   G   H   I   J   K   L   M   N   O */ 
@@ -185,4 +185,4 @@ lexeme lex_next;    /* the next lexeme */
 char get_lex_ch(void);
 void lex_open(const char *f);
 void lex_advance();
-void lex_put(lexeme l, FILE *f);
+void lex_put(lexeme *l, FILE *f);

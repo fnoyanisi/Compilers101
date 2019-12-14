@@ -147,20 +147,36 @@ void lex_advance() {
     } else if (ch == '\'' || ch == '\"'){
         /* strings */
         printf("none\n");
+    } else {
+        /* other */
+
+        /* no lexeme assignments, just skip */
+
+        if ((ch = fgetc(infile)) == EOF) {
+            if (ferror(infile)) {
+                fclose(infile);
+                perror(NULL);
+                exit(EXIT_FAILURE);
+            } else {
+                /* end of file */
+                return;
+            }
+        }
     }
 }
 
-void lex_put(lexeme lex, FILE *f) {
+void lex_put(lexeme *lex, FILE *f) {
     /* reconstruct and output lex to file f */
-    switch (lex.type) {
+    switch (lex->type) {
         case IDENT:
         case KEYWORD:
         /* =BUG= missing code for these lexeme types */
             break;
         case NUMBER:
-            fprintf(f, "%" PRId32, lex.value);
+            fprintf(f, "%" PRId32, lex->value);
+            break;
         case PUNCT:
-            fputs(punc_name[lex.value],f);
+            fputs(punc_name[lex->value],f);
             break;
         case STRING:
         case ENDFILE:
