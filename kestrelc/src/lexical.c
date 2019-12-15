@@ -69,6 +69,10 @@ void lex_open(const char *f) {
     in_comment = 0;
     in_string = 0;
     line_number = 1;
+
+    lex_this.type = NONE;
+    lex_this.value = 0;
+
     lex_advance();
 }
 
@@ -85,8 +89,6 @@ void lex_advance() {
         }
     }
 
-    /* =BUG= how do we handle comments? */
-
     /* handle comments */
     if (lex_this.type == PUNCT && lex_this.value == PT_MINUS && ch == '-')
         in_comment = 1;
@@ -100,7 +102,6 @@ void lex_advance() {
     }
     in_comment = 0;
 
-    
     if (ch == EOF) {
         /* end of file */ 
         lex_next.type = ENDFILE;
@@ -125,13 +126,19 @@ void lex_advance() {
         /* punctuation */
         lex_next.type = PUNCT;
 
-        if (lex_this.type == PUNCT && lex_this.value == PT_DIV && ch == '=')
+        if (lex_this.type == PUNCT && lex_this.value == PT_DIV && ch == '='){
             lex_this.value = PT_NOTEQL; /* /= */
-        else if (lex_this.type == PUNCT && lex_this.value == PT_GT && ch == '=')
+            lex_next.type = NONE;
+            lex_next.value = 0;
+        } else if (lex_this.type == PUNCT && lex_this.value == PT_GT && ch == '=') {
             lex_this.value = PT_GE;     /* >= */
-        else if (lex_this.type == PUNCT && lex_this.value == PT_LT && ch == '=')
+            lex_next.type = NONE;
+            lex_next.value = 0;
+        } else if (lex_this.type == PUNCT && lex_this.value == PT_LT && ch == '=') {
             lex_this.value = PT_LE;     /* <= */
-        else       
+            lex_next.type = NONE;
+            lex_next.value = 0;
+        } else       
             lex_next.value = punc_class[ch];
 
         if ((ch = fgetc(infile)) == EOF) {
@@ -180,6 +187,7 @@ void lex_put(lexeme *lex, FILE *f) {
             break;
         case STRING:
         case ENDFILE:
+        case NONE:
         /* =BUG= missing code for these lexeme types */
             break;
     }
