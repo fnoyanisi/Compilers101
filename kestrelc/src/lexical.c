@@ -25,16 +25,173 @@
  */
 
 #include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include <errno.h>
+#include <inttypes.h>
+#include "kestrelc.h"
 #include "lexical.h"
+#include "errors.h"
 
- void lex_open(char *f) {
+static int ch;          /* current char not yet part of a lexeme */
+static FILE *infile;    /* the input file */
+static int in_comment;
+static int in_string;
+static int line_number;
 
- }
+static const char *punc_name[]= {
+    /* PT_SEMI   */ ";",  /* PT_EQUALS */ "=",  /* PT_COLON  */  ":",
+    /* PT_LPAREN */ "(",  /* PT_LBRAKT */ "[",  /* PT_LBRACE */  "{",
+    /* PT_RPAREN */ ")",  /* PT_RBRAKT */ "]",  /* PT_RBRACE */  "}",
+    /* PT_COMMA  */ ",",  /* PT_ATSIGN */ "@",  /* PT_ELIPS  */  "..",
+    /* PT_NOTEQL */ "/=", /* PT_GT     */ ">",  /* PT_GE     */  ">=",
+    /* PT_LT     */ "<",  /* PT_LE     */ "<=", /* PT_PLUS   */  "+",
+    /* PT_MINUS  */ "-",  /* PT_TIMES  */ "*",  /* PT_DIV    */  "/",
+    /* PT_MOD    */ "%",  /* PT_AND    */ "&",  /* PT_OR     */  "|",
+    /* PT_NOT    */ "~",  /* PT_DOT    */ ".",  /* PT_NONE   */  "?WHAT?"
+};
 
- void lex_advance() {
+/* helper function */
+char get_lex_ch(void){
+    return ch;
+}
 
- }
+void lex_open(const char *f) {
+    if (f == NULL) {
+         /* for the ability to pipe the source from stdin */
+        infile = stdin;
+    } else if ((infile = fopen(f,"r")) == NULL) {
+        perror(f);
+        exit(EXIT_FAILURE);
+    } 
 
- void lex_put(lexeme *l, FILE *f) {
+    ch = fgetc(infile);
+    in_comment = 0;
+    in_string = 0;
+    line_number = 1;
 
- }
+    lex_this.type = NONE;
+    lex_this.value = 0;
+
+    lex_advance();
+}
+
+void lex_advance() {
+    lex_this = lex_next;
+
+    /* skip whitespace */
+    while(ISCLASS(ch, WHITESPACE)) {
+        if ((ch = fgetc(infile)) == EOF) {
+            if (ferror(infile)) {
+                perror(NULL);
+                exit(EXIT_FAILURE);
+            }
+        }
+    }
+
+    /* handle comments */
+    if (lex_this.type == PUNCT && lex_this.value == PT_MINUS && ch == '-')
+        in_comment = 1;
+    while(ch != '\n' && in_comment) {
+        if ((ch = fgetc(infile)) == EOF) {
+            if (ferror(infile)) {
+                perror(NULL);
+                exit(EXIT_FAILURE);
+            }
+        }
+    }
+    in_comment = 0;
+
+    if (ch == EOF) {
+        /* end of file */ 
+        lex_next.type = ENDFILE;
+        lex_next.value = 0;
+    } else if ((ch >= '0') && (ch <= '9')) {
+        /* decimal digit */
+        lex_next.type = NUMBER;
+        lex_next.value = 0;
+        
+        do {
+            /* check for overflow */
+            if (lex_next.value > ((UINT32_MAX - (ch - '0')) / 10)){
+                error_warn(ER_TOOBIG, line_number);
+            } else {
+            /* accumulate value of the digit */
+                lex_next.value = (lex_next.value * 10) + (ch - '0');
+            }
+            ch = fgetc(infile);
+        } while ((ch >= '0') && (ch <= '9'));
+        /* =BUG= what if a # leads into an odd number base? */
+    } else if (ISCLASS(ch, PUNCTUATION)) { 
+        /* punctuation */
+        lex_next.type = PUNCT;
+
+        /* multi-char punctuation */
+        if (ch == '=') {
+            switch (lex_this.value) {
+                case PT_DIV:
+                    lex_this.value = PT_NOTEQL; /* /= */
+                    break;
+                case PT_GT:
+                    lex_this.value = PT_GE;     /* >= */
+                    break;
+                case PT_LT:
+                    lex_this.value = PT_LE;     /* <= */
+                    break;
+            }
+            lex_next.type = NONE;
+            lex_next.value = 0;
+        } else       
+            lex_next.value = punc_class[ch];
+
+        if ((ch = fgetc(infile)) == EOF) {
+            if (ferror(infile)) {
+                fclose(infile);
+                perror(NULL);
+                exit(EXIT_FAILURE);
+            } else {
+                /* end of file */
+                return;
+            }
+        }
+    } else if (ch == '\'' || ch == '\"'){
+        /* strings */
+        printf("none\n");
+    } else {
+        /* other */
+
+        /* no lexeme assignments, just skip */
+
+        if ((ch = fgetc(infile)) == EOF) {
+            if (ferror(infile)) {
+                fclose(infile);
+                perror(NULL);
+                exit(EXIT_FAILURE);
+            } else {
+                /* end of file */
+                return;
+            }
+        }
+    }
+}
+
+void lex_put(lexeme *lex, FILE *f) {
+    /* reconstruct and output lex to file f */
+    switch (lex->type) {
+        case IDENT:
+        case KEYWORD:
+        /* =BUG= missing code for these lexeme types */
+            break;
+        case NUMBER:
+            fprintf(f, "%" PRId32, lex->value);
+            break;
+        case PUNCT:
+            fputs(punc_name[lex->value],f);
+            break;
+        case STRING:
+        case ENDFILE:
+        case NONE:
+        /* =BUG= missing code for these lexeme types */
+            break;
+    }
+}
