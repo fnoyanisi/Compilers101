@@ -79,15 +79,15 @@ void tearDown(void){
   fclose(s_fd);
   fclose(o_fd);
 
-  // if (remove(s_file) != 0) {
-  //   perror(s_file);
-  //   exit(EXIT_FAILURE);
-  // }
+  if (remove(s_file) != 0) {
+    perror(s_file);
+    exit(EXIT_FAILURE);
+  }
 
-  // if (remove(o_file) != 0) {
-  //   perror(o_file);
-  //   exit(EXIT_FAILURE);
-  // }
+  if (remove(o_file) != 0) {
+    perror(o_file);
+    exit(EXIT_FAILURE);
+  }
 }
 
 /* 
