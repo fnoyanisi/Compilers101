@@ -51,7 +51,7 @@ static const char *punc_name[]= {
     /* PT_NOT    */ "~",  /* PT_DOT    */ ".",  /* PT_NONE   */  "?WHAT?"
 };
 
-/* helper function to get the state of the lexer */
+/* helper function */
 char get_lex_ch(void){
     return ch;
 }
@@ -126,16 +126,19 @@ void lex_advance() {
         /* punctuation */
         lex_next.type = PUNCT;
 
-        if (lex_this.type == PUNCT && lex_this.value == PT_DIV && ch == '='){
-            lex_this.value = PT_NOTEQL; /* /= */
-            lex_next.type = NONE;
-            lex_next.value = 0;
-        } else if (lex_this.type == PUNCT && lex_this.value == PT_GT && ch == '=') {
-            lex_this.value = PT_GE;     /* >= */
-            lex_next.type = NONE;
-            lex_next.value = 0;
-        } else if (lex_this.type == PUNCT && lex_this.value == PT_LT && ch == '=') {
-            lex_this.value = PT_LE;     /* <= */
+        /* multi-char punctuation */
+        if (ch == '=') {
+            switch (lex_this.value) {
+                case PT_DIV:
+                    lex_this.value = PT_NOTEQL; /* /= */
+                    break;
+                case PT_GT:
+                    lex_this.value = PT_GE;     /* >= */
+                    break;
+                case PT_LT:
+                    lex_this.value = PT_LE;     /* <= */
+                    break;
+            }
             lex_next.type = NONE;
             lex_next.value = 0;
         } else       
