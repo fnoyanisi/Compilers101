@@ -161,7 +161,7 @@ void test_punct(){
 void test_multi_punct(){
   int i, slen, len = 7, buflen = 32;
   char buf[buflen]; /* buffer to store the text read from the file */
-  const char *series[] = {";", "\\=", "(", ")", ">=", "<=", "-"};
+  const char *series[] = {";", "/=", "(", ")", ">=", "<=", "-"};
   
   write_s_file(series, len);
 
@@ -183,17 +183,17 @@ void test_multi_punct(){
       perror(o_file);
       exit(EXIT_FAILURE);
     }
-    printf("series[i] =\t%s  buf =\t%s slen =\t%d\n", series[i], buf, slen);
-    //TEST_ASSERT_EQUAL_STRING_LEN(series[i], buf, slen);
+
+    TEST_ASSERT_EQUAL_STRING_LEN(series[i], buf, slen);
     lex_advance();
   }
 }
 
 int main(int argc, const char * argv[]) {
   UNITY_BEGIN();
-    // RUN_TEST(test_lex_open);
-    // RUN_TEST(test_numeric);
-    // RUN_TEST(test_punct);
+    RUN_TEST(test_lex_open);
+    RUN_TEST(test_numeric);
+    RUN_TEST(test_punct);
     RUN_TEST(test_multi_punct);
   return UNITY_END();
 }
