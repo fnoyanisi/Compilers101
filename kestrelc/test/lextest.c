@@ -34,9 +34,12 @@
 static FILE *s_fd;
 static FILE *o_fd;
 static const char *s_file = "test.kl";
-static const char *o_file = "output.txt";
+static const char *o_file = "output.kl";
 
-/* writes the Kestrel code into s_file */
+/* 
+* writes the Kestrel code into s_file, which is the source file 
+* the lexer reads.
+*/
 void write_s_file(const char **series, int len){
   int i;
   for (i = 0; i < len; i++){
@@ -48,7 +51,10 @@ void write_s_file(const char **series, int len){
   rewind(s_fd);
 }
 
-/* read the source and write the output to "output.txt" */
+/* 
+ * read the source file , s_file, and writes the output in to 
+ * o_file 
+ */
 void write_o_file(){
   lex_open(s_file);
   do {
@@ -60,6 +66,12 @@ void write_o_file(){
   } while (lex_this.type != ENDFILE);
 }
 
+/*
+ * Comapres each lexeme from the expected output, given by the 
+ * parameter s, with the one read from o_file, which is the output 
+ * of the lexer.
+ * Parameter len is the length of the character string array, s.
+ */
 void check_diff(const char **s, int len, FILE *fd){
   int i, slen, buflen = 32;
   char buf[buflen]; /* buffer to store the text read from the file */
@@ -77,6 +89,7 @@ void check_diff(const char **s, int len, FILE *fd){
   }
 }
 
+/* Executed before each unit test */
 void setUp(void){
   if (remove(s_file) == -1 && errno != ENOENT){
     perror(s_file);
@@ -105,19 +118,20 @@ void setUp(void){
   lex_next.value = 0;
 }
 
+/* Executed after each unit test */
 void tearDown(void){
   fclose(s_fd);
   fclose(o_fd);
 
-  // if (remove(s_file) != 0) {
-  //   perror(s_file);
-  //   exit(EXIT_FAILURE);
-  // }
+  if (remove(s_file) != 0) {
+    perror(s_file);
+    exit(EXIT_FAILURE);
+  }
 
-  // if (remove(o_file) != 0) {
-  //   perror(o_file);
-  //   exit(EXIT_FAILURE);
-  // }
+  if (remove(o_file) != 0) {
+    perror(o_file);
+    exit(EXIT_FAILURE);
+  }
 }
 
 /* 
@@ -151,10 +165,6 @@ void test_numeric(){
   }
 }
 
-/* 
- * the lexer should ignore white spaces and only store the punctuation 
- * characters in lex_next.value
- */
 void test_punct(){
   int len = 9;
   const char *series[] = {";", "(", ")", ",", "/", "<", "-", "%", "~"};
@@ -167,8 +177,8 @@ void test_punct(){
 }
 
 /* 
- * the lexer should ignore white spaces and only store the punctuation 
- * characters in lex_next.value.
+ * the lexer should be able to capture punctuation marks that are 
+ * comprised of two characters
  */
 void test_multi_punct(){
   int len = 9;
@@ -182,6 +192,10 @@ void test_multi_punct(){
 
 }
 
+/* 
+ * the leer should ignore the comment lines, which start with -- 
+ * and write only the other character strings in to o_file
+ */
 void test_comment(){
   int len = 6;
   const char *series[] = {"-- t", 
