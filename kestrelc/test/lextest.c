@@ -154,7 +154,7 @@ void test_lex_open(void) {
  */
 void test_numeric(){
   int i, len = 9;
-  const char *series[]= {"1","2","3","4","5","6","7","8","9"};
+  const char *series[]= {"   1","2","3","4","5","6","7","8","9"};
   
   write_s_file(series, len);
 
