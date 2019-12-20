@@ -36,6 +36,7 @@ static FILE *o_fd;
 static const char *s_file = "test.kl";
 static const char *o_file = "output.txt";
 
+/* writes the Kestrel code into s_file */
 void write_s_file(const char **series, int len){
   int i;
   for (i = 0; i < len; i++){
