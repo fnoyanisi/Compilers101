@@ -190,12 +190,16 @@ void test_comment(){
                           "=",
                           "-- b",
                           "-"};
+  const char *expected[] = {"(",
+                          "=",
+                          "-"};                          
 
   write_s_file(series, len);
 
   write_o_file();
 
-  check_diff(series, len, o_fd);
+  len = 3;
+  check_diff(expected, len, o_fd);
 }
 
 int main(int argc, const char * argv[]) {

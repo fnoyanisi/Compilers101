@@ -92,15 +92,15 @@ void lex_advance() {
 
     /* handle comments */
     /* =BUG= */
-    if(ch == '-') {
+    while(ch == '-') {
         if ((next_ch = getc(infile)) == '-'){
             do {
                 ch = getc(infile);
-            }  while(ch != '\n' && ch != EOF);
+            }  while(ch != '\n');
             ch = getc(infile);
-            return;
         } else {
             ungetc(next_ch, infile);
+            break;
         }
     }
 
@@ -125,6 +125,7 @@ void lex_advance() {
         } while ((ch >= '0') && (ch <= '9'));
         /* =BUG= what if a # leads into an odd number base? */
     } else if (ISCLASS(ch, PUNCTUATION)) { 
+
         /* punctuation */
         lex_next.type = PUNCT;
         lex_next.value = punc_class[ch];
