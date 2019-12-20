@@ -92,17 +92,17 @@ void lex_advance() {
 
     /* handle comments */
     /* =BUG= */
-    // if(ch == '-') {
-    //     if ((ch = getc(infile)) == '-'){
-    //         do {
-    //             ch = getc(infile);
-    //         }  while(ch != '\n' && ch != EOF);
-    //         ch = getc(infile);
-    //         return;
-    //     } else {
-    //         ungetc(ch, infile);
-    //     }
-    // }
+    if(ch == '-') {
+        if ((next_ch = getc(infile)) == '-'){
+            do {
+                ch = getc(infile);
+            }  while(ch != '\n' && ch != EOF);
+            ch = getc(infile);
+            return;
+        } else {
+            ungetc(next_ch, infile);
+        }
+    }
 
     if (ch == EOF) {
         /* end of file */ 

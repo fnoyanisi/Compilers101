@@ -47,6 +47,35 @@ void write_s_file(const char **series, int len){
   rewind(s_fd);
 }
 
+/* read the source and write the output to "output.txt" */
+void write_o_file(){
+  lex_open(s_file);
+  do {
+    if (lex_this.type != NONE){
+      lex_put(&lex_this, o_fd);
+      fputs("\n",o_fd);
+    }
+    lex_advance();
+  } while (lex_this.type != ENDFILE);
+}
+
+void check_diff(const char **s, int len, FILE *fd){
+  int i, slen, buflen = 32;
+  char buf[buflen]; /* buffer to store the text read from the file */
+  
+  rewind(fd); /* go back to begining of the file */
+  
+  for (i=0; i < len; i++) {
+    slen = strlen(s[i]);
+    if (fgets(buf, buflen, fd) == NULL){
+      perror(o_file);
+      exit(EXIT_FAILURE);
+    }
+    TEST_ASSERT_EQUAL_STRING_LEN(s[i], buf,slen);
+    lex_advance();
+  }
+}
+
 void setUp(void){
   if (remove(s_file) == -1 && errno != ENOENT){
     perror(s_file);
@@ -126,32 +155,14 @@ void test_numeric(){
  * characters in lex_next.value
  */
 void test_punct(){
-  int i, len = 9, buflen = 32;
-  char buf[buflen];
+  int len = 9;
   const char *series[] = {";", "(", ")", ",", "/", "<", "-", "%", "~"};
 
   write_s_file(series, len);
 
-  /* read the source and write the output to "output.txt" */
-  lex_open(s_file);
-  do {
-    if (lex_this.type != NONE){
-      lex_put(&lex_this, o_fd);
-      fputs("\n",o_fd);
-    }
-    lex_advance();
-  } while (lex_this.type != ENDFILE);
+  write_o_file();
 
-  rewind(o_fd); /* go back to begining of the file */
-  
-  for (i=0; i < len; i++) {
-    if (fgets(buf, buflen, o_fd) == NULL){
-      perror(o_file);
-      exit(EXIT_FAILURE);
-    }
-    TEST_ASSERT_EQUAL_STRING_LEN(series[i], buf,1);
-    lex_advance();
-  }
+  check_diff(series, len, o_fd);
 }
 
 /* 
@@ -159,34 +170,15 @@ void test_punct(){
  * characters in lex_next.value.
  */
 void test_multi_punct(){
-  int i, slen, len = 9, buflen = 32;
-  char buf[buflen]; /* buffer to store the text read from the file */
+  int len = 9;
   const char *series[] = {";", "/=", "(", ">", ")", ">=", "<=", "-", "/"};
   
   write_s_file(series, len);
 
-  /* write output of the lexer to a file */
-  lex_open(s_file);
-  do {
-    if (lex_this.type != NONE) {
-      lex_put(&lex_this, o_fd);
-      fputs("\n",o_fd);
-    }
-    lex_advance();
-  } while (lex_this.type != ENDFILE);
+  write_o_file();
 
-  rewind(o_fd); /* go back to begining of the file */
-  
-  for (i=0; i < len; i++) {
-    slen = strlen(series[i]);
-    if (fgets(buf, buflen, o_fd) == NULL){
-      perror(o_file);
-      exit(EXIT_FAILURE);
-    }
+  check_diff(series, len, o_fd);
 
-    TEST_ASSERT_EQUAL_STRING_LEN(series[i], buf, slen);
-    lex_advance();
-  }
 }
 
 void test_comment(){
@@ -200,15 +192,9 @@ void test_comment(){
 
   write_s_file(series, len);
 
-  lex_open(s_file);
-  do {
-    if (lex_this.type != NONE){
-      lex_put(&lex_this, o_fd);
-      fputs("\n",o_fd);
-    }
-    lex_advance();
-  } while (lex_this.type != ENDFILE);
+  write_o_file();
 
+  check_diff(series, len, o_fd);
 }
 
 int main(int argc, const char * argv[]) {
@@ -217,6 +203,6 @@ int main(int argc, const char * argv[]) {
     RUN_TEST(test_numeric);
     RUN_TEST(test_punct);
     RUN_TEST(test_multi_punct);
-    // RUN_TEST(test_comment);
+    RUN_TEST(test_comment);
   return UNITY_END();
 }
