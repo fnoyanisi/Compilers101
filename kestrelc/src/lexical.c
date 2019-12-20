@@ -77,6 +77,7 @@ void lex_open(const char *f) {
 }
 
 void lex_advance() {
+    char next_ch;
     lex_this = lex_next;
 
     /* skip whitespace */
@@ -90,17 +91,18 @@ void lex_advance() {
     }
 
     /* handle comments */
-    if (lex_this.type == PUNCT && lex_this.value == PT_MINUS && ch == '-')
-        in_comment = 1;
-    while(ch != '\n' && in_comment) {
-        if ((ch = fgetc(infile)) == EOF) {
-            if (ferror(infile)) {
-                perror(NULL);
-                exit(EXIT_FAILURE);
-            }
-        }
-    }
-    in_comment = 0;
+    /* =BUG= */
+    // if(ch == '-') {
+    //     if ((ch = getc(infile)) == '-'){
+    //         do {
+    //             ch = getc(infile);
+    //         }  while(ch != '\n' && ch != EOF);
+    //         ch = getc(infile);
+    //         return;
+    //     } else {
+    //         ungetc(ch, infile);
+    //     }
+    // }
 
     if (ch == EOF) {
         /* end of file */ 
@@ -125,24 +127,26 @@ void lex_advance() {
     } else if (ISCLASS(ch, PUNCTUATION)) { 
         /* punctuation */
         lex_next.type = PUNCT;
+        lex_next.value = punc_class[ch];
 
         /* multi-char punctuation */
-        if (ch == '=') {
-            switch (lex_this.value) {
-                case PT_DIV:
-                    lex_this.value = PT_NOTEQL; /* /= */
+        if (ch == '/' || ch == '>' || ch == '<') {
+            if ((next_ch = getc(infile)) == '=') {
+                switch (ch) {
+                case '/':
+                    lex_next.value = PT_NOTEQL;
                     break;
-                case PT_GT:
-                    lex_this.value = PT_GE;     /* >= */
+                case '<':
+                    lex_next.value = PT_LE;
                     break;
-                case PT_LT:
-                    lex_this.value = PT_LE;     /* <= */
+                case '>':
+                    lex_next.value = PT_GE;
                     break;
-            }
-            lex_next.type = NONE;
-            lex_next.value = 0;
-        } else       
-            lex_next.value = punc_class[ch];
+                default:
+                    ungetc(next_ch, infile);
+                }
+            } 
+        }
 
         if ((ch = fgetc(infile)) == EOF) {
             if (ferror(infile)) {

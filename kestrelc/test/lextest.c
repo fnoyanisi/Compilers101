@@ -79,15 +79,15 @@ void tearDown(void){
   fclose(s_fd);
   fclose(o_fd);
 
-  if (remove(s_file) != 0) {
-    perror(s_file);
-    exit(EXIT_FAILURE);
-  }
+  // if (remove(s_file) != 0) {
+  //   perror(s_file);
+  //   exit(EXIT_FAILURE);
+  // }
 
-  if (remove(o_file) != 0) {
-    perror(o_file);
-    exit(EXIT_FAILURE);
-  }
+  // if (remove(o_file) != 0) {
+  //   perror(o_file);
+  //   exit(EXIT_FAILURE);
+  // }
 }
 
 /* 
@@ -159,9 +159,9 @@ void test_punct(){
  * characters in lex_next.value.
  */
 void test_multi_punct(){
-  int i, slen, len = 7, buflen = 32;
+  int i, slen, len = 9, buflen = 32;
   char buf[buflen]; /* buffer to store the text read from the file */
-  const char *series[] = {";", "/=", "(", ")", ">=", "<=", "-"};
+  const char *series[] = {";", "/=", "(", ">", ")", ">=", "<=", "-", "/"};
   
   write_s_file(series, len);
 
@@ -189,11 +189,34 @@ void test_multi_punct(){
   }
 }
 
+void test_comment(){
+  int len = 6;
+  const char *series[] = {"-- t", 
+                          "-- a",
+                          "(",
+                          "=",
+                          "-- b",
+                          "-"};
+
+  write_s_file(series, len);
+
+  lex_open(s_file);
+  do {
+    if (lex_this.type != NONE){
+      lex_put(&lex_this, o_fd);
+      fputs("\n",o_fd);
+    }
+    lex_advance();
+  } while (lex_this.type != ENDFILE);
+
+}
+
 int main(int argc, const char * argv[]) {
   UNITY_BEGIN();
     RUN_TEST(test_lex_open);
     RUN_TEST(test_numeric);
     RUN_TEST(test_punct);
     RUN_TEST(test_multi_punct);
+    // RUN_TEST(test_comment);
   return UNITY_END();
 }
