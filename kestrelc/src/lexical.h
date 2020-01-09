@@ -171,8 +171,10 @@ static const punc_type punc_class[256] = {
 typedef enum {NONE, IDENT, KEYWORD, NUMBER, STRING, PUNCT, ENDFILE} lex_types;
 
 typedef struct lexeme_t {
-    lex_types type;
+    lex_types type;   
     uint32_t value;
+    unsigned line;    /* line number of the lexeme */
+    unsigned pos;     /* zero-indexed start location within the line */
 } lexeme;
 
 lexeme lex_this;    /* the current lexeme */
