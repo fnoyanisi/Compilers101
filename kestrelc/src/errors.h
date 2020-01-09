@@ -32,7 +32,8 @@
 
 typedef enum {
     ER_BADFILE,
-    ER_TOOBIG
+    ER_TOOBIG,
+    ER_POOLOVF
 } error_message;
 
 void error_fatal(error_message, int line);
