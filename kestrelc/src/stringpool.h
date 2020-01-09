@@ -1,5 +1,11 @@
 /*-
  * stringpool.h
+ * 
+ * This implementation is following the theory in the Compiler Construction
+ * course given by Douglas W.Jones from The University of Iowa Department of 
+ * Computer Science
+ * http://homepage.divms.uiowa.edu/~jones/compiler/
+ * 
  * Copyright (c) 2019 Fehmi Noyan Isi
  * All rights reserved.
  *

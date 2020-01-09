@@ -1,5 +1,11 @@
 /*-
  * lexical.c
+ * 
+ * This implementation is following the theory in the Compiler Construction
+ * course given by Douglas W.Jones from The University of Iowa Department of 
+ * Computer Science
+ * http://homepage.divms.uiowa.edu/~jones/compiler/
+ * 
  * Copyright (c) 2019 Fehmi Noyan Isi
  * All rights reserved.
  *
@@ -32,6 +38,7 @@
 #include "kestrelc.h"
 #include "lexical.h"
 #include "errors.h"
+#include "stringpool.h"
 
 static int ch;          /* current char not yet part of a lexeme */
 static FILE *infile;    /* the input file */
@@ -82,6 +89,9 @@ void lex_advance() {
 
     /* skip whitespace */
     while(ISCLASS(ch, WHITESPACE)) {
+        if (ch == '\n') /* CR */
+            line_number++;
+
         if ((ch = fgetc(infile)) == EOF) {
             if (ferror(infile)) {
                 perror(NULL);
@@ -91,12 +101,12 @@ void lex_advance() {
     }
 
     /* handle comments */
-    /* =BUG= */
     while(ch == '-') {
         if ((next_ch = getc(infile)) == '-'){
             do {
                 ch = getc(infile);
             }  while(ch != '\n');
+            line_number++;
             ch = getc(infile);
         } else {
             ungetc(next_ch, infile);
@@ -159,7 +169,32 @@ void lex_advance() {
                 return;
             }
         }
-    } else if (ch == '\'' || ch == '\"'){
+    } else if (ISCLASS(ch, LETTER)) { 
+        /* identifier */
+        string_handle str = string_start(line_number);
+        lex_next.type = IDENT; /* keyword or identifier */
+
+        do {
+            string_append(ch);
+            ch = getc(infile);
+        } while (ch != EOF || ISCLASS(ch, LETTER | NUMBER));
+        string_done();
+
+        /* =BUG= must call either string_accept() or string_reject() */
+        /* =BUG= lex_next.value must be set to something unique to the text */
+        /* note:
+        * handle = string_start( current line )
+        * for each character ch in the string { string_append(ch) }
+        * string_done()
+        *  if symbol_table_lookup_fails() { 
+        *   string_accept() 
+        *   symbol_table_add( handle ) 
+        *  } else {
+        *   string_reject()
+        *  }
+        */
+        
+    } else if (ch == '\'' || ch == '"'){
         /* strings */
         printf("none\n");
     } else {
