@@ -37,7 +37,8 @@
 static const char *message[] = {
     /* ER_BADFILE */    "Cannot open input file",
     /* ER_TOOBIG */     "Value too large",
-    /* ER_POOLOVF */    "String pool buffer overflow"
+    /* ER_POOLOVF */    "String pool buffer overflow",
+    /* ER_TOOLONG */    "String is too long"
 };
 
 void error_fatal(error_message er, int line){
