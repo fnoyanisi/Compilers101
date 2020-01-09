@@ -34,7 +34,7 @@ static const char *message[] = {
 };
 
 void error_fatal(error_message er, int line){
-    fprintf(stderr, "Fatal error on line %d: %s", line, message[er]);
+    fprintf(stderr, "Fatal error in line %d: %s", line, message[er]);
     exit(EXIT_FAILURE);
 }
 
