@@ -82,7 +82,7 @@ void symbol_init();
  * void symbol_append(char ch);
  */
 #define symbol_append(ch) {                                     \
-            _symbol_hash = ((_symbol_hash * SYMBOL_HASH))       \
+            _symbol_hash = ((_symbol_hash * SYMBOL_HASH)        \
                             + (ch)) % SYMBOL_SIZE;              \
             string_append(ch);                                  \
 }

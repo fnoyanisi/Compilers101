@@ -38,7 +38,7 @@
 #include "kestrelc.h"
 #include "lexical.h"
 #include "errors.h"
-#include "stringpool.h"
+#include "symboltable.h"
 
 static int ch;          /* current char not yet part of a lexeme */
 static FILE *infile;    /* the input file */
@@ -171,14 +171,14 @@ void lex_advance() {
         }
     } else if (ISCLASS(ch, LETTER)) { 
         /* identifier */
-        string_handle str = string_start(line_number);
         lex_next.type = IDENT; /* keyword or identifier */
+        symbol_start(line_number);
 
         do {
-            string_append(ch);
+            symbol_append(ch);
             ch = getc(infile);
         } while (ch != EOF || ISCLASS(ch, LETTER | NUMBER));
-        string_done();
+        lex_next.value = symbol_lookup();
         
     } else if (ch == '\'' || ch == '"'){
         /* strings */
