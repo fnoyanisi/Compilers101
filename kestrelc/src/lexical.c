@@ -179,20 +179,6 @@ void lex_advance() {
             ch = getc(infile);
         } while (ch != EOF || ISCLASS(ch, LETTER | NUMBER));
         string_done();
-
-        /* =BUG= must call either string_accept() or string_reject() */
-        /* =BUG= lex_next.value must be set to something unique to the text */
-        /* note:
-        * handle = string_start( current line )
-        * for each character ch in the string { string_append(ch) }
-        * string_done()
-        *  if symbol_table_lookup_fails() { 
-        *   string_accept() 
-        *   symbol_table_add( handle ) 
-        *  } else {
-        *   string_reject()
-        *  }
-        */
         
     } else if (ch == '\'' || ch == '"'){
         /* strings */

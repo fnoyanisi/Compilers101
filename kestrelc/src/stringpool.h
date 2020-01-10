@@ -118,7 +118,7 @@ EXTERN string_handle _string_line;
 #define string_done(ch) {                                   \
             int length = _string_pos - (_string_limit + 2); \
             if (length > 65535) {                           \
-                error_warn(ERR_TOOLONG, _string_line);      \
+                error_warn(ER_TOOLONG, _string_line);      \
                 length = 65535;                             \
             }                                               \
             _string_pool[_string_limit] = length & 0xFF;    \
