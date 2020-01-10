@@ -96,3 +96,5 @@ void symbol_init();
 
 /* check whether a symbol has already been added into strin pool or not */
 symbol_handle symbol_lookup();
+
+#undef EXTERN

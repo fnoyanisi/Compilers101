@@ -6,7 +6,7 @@
  * Computer Science
  * http://homepage.divms.uiowa.edu/~jones/compiler/
  * 
- * Copyright (c) 2019 Fehmi Noyan Isi
+ * Copyright (c) 2020 Fehmi Noyan Isi
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@
 #define POOL_SIZE   2048
 #define STRING_NUL  0
 
-/* an index within [0 POOL_SIZE-1] range to address the strings */
+/* an index within [0 ~ POOL_SIZE-1] range to address the strings */
 typedef uint32_t string_handle;
 
 /* main buffer to store all the text */
@@ -130,14 +130,14 @@ EXTERN string_handle _string_line;
  * 
  * void string_accept();
  */
-#define string_accept() { _tring_limit = _string_pos; }
+#define string_accept() { _string_limit = _string_pos; }
 
 /* 
  * reject the new string, it will not be added to the pool 
  * 
  * void string_reject();
  */
-#define string_reject() { (void); }
+#define string_reject() {}
 
 /* outputs the text of the string to FILE */
 void string_put(string_handle h, FILE *f);
