@@ -30,6 +30,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef _ERRORS_H_
+#define _ERRORS_H_
 typedef enum {
     ER_BADFILE,
     ER_TOOBIG,
@@ -41,3 +43,5 @@ typedef enum {
 void error_fatal(error_message, int line);
 void error_warn(error_message, int line);
 void error_gotbutwant(char *got, char *want);
+
+#endif

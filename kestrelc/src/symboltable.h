@@ -35,31 +35,25 @@
 #include <stdbool.h>
 #include "stringpool.h"
 
-/*
- * When the file is used from stringpool.c (but nowhere else)
- * the user nust first define EXTERN as nothing or blank
- */
-#ifndef EXTERN
-    #define EXTERN extern
-#endif
-
 #define SYMBOL_SIZE 2048
 #define SYMBOL_HASH 31
+
+/* The extern variables here are defined in symboltable.c */
 
 /* an index within [0 ~ SYMBOL_SIZE-1] range to address the symbols */
 typedef uint32_t symbol_handle;
 
 /* maps symbol handles to string handles */
-EXTERN string_handle _symbol_table[SYMBOL_SIZE];
+extern string_handle _symbol_table[SYMBOL_SIZE];
 
 /* the hash code of the symbol currently being accumulated */
-EXTERN symbol_handle _symbol_hash;
+extern symbol_handle _symbol_hash;
 
 /* the tentative string_handle for the symbol being accumulated */
-EXTERN string_handle _symbol_string;
+extern string_handle _symbol_string;
 
 /* line number on which tge string is found */
-EXTERN int _symbol_line;
+extern int _symbol_line;
 
 /* Initialize the symbol table */
 void symbol_init();
@@ -96,5 +90,3 @@ void symbol_init();
 
 /* check whether a symbol has already been added into strin pool or not */
 symbol_handle symbol_lookup();
-
-#undef EXTERN

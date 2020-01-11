@@ -30,6 +30,7 @@
 #include <errno.h>
 #include <unity.h>
 #include <lexical.h>
+#include <symboltable.h>
 
 static FILE *s_fd;
 static FILE *o_fd;

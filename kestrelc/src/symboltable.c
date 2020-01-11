@@ -30,10 +30,21 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define EXTERN
 #include "errors.h"
 #include "stringpool.h"
 #include "symboltable.h"
+
+/* maps symbol handles to string handles */
+string_handle _symbol_table[SYMBOL_SIZE];
+
+/* the hash code of the symbol currently being accumulated */
+symbol_handle _symbol_hash;
+
+/* the tentative string_handle for the symbol being accumulated */
+string_handle _symbol_string;
+
+/* line number on which tge string is found */
+int _symbol_line;
 
 void symbol_init(){
     symbol_handle i;

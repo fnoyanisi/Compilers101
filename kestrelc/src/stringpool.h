@@ -34,32 +34,25 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-/*
- * When the file is used from stringpool.c (but nowhere else)
- * the user nust first define EXTERN as nothing or blank
- */
-#ifndef EXTERN
-    #define EXTERN extern
-#endif
-
 #define POOL_SIZE   2048
 #define STRING_NUL  0
+
+/* The extern variables here are defined in stringpool.c */
 
 /* an index within [0 ~ POOL_SIZE-1] range to address the strings */
 typedef uint32_t string_handle;
 
 /* main buffer to store all the text */
-EXTERN unsigned char _string_pool[POOL_SIZE];
+extern unsigned char _string_pool[POOL_SIZE];
 
 /* index of the next free location */
-EXTERN string_handle _string_limit;
+extern string_handle _string_limit;
 
 /* position to store new characters added to the _string_pool */
-EXTERN string_handle _string_pos;
+extern string_handle _string_pos;
 
 /* the line number on which the string is starting */
-EXTERN string_handle _string_line;
-
+extern string_handle _string_line;
 
 /*
  *    <-------------------- POOL_SIZE ---------------------> 
@@ -118,7 +111,7 @@ EXTERN string_handle _string_line;
 #define string_done(ch) {                                   \
             int length = _string_pos - (_string_limit + 2); \
             if (length > 65535) {                           \
-                error_warn(ER_TOOLONG, _string_line);      \
+                error_warn(ER_TOOLONG, _string_line);       \
                 length = 65535;                             \
             }                                               \
             _string_pool[_string_limit] = length & 0xFF;    \
@@ -144,5 +137,3 @@ void string_put(string_handle h, FILE *f);
 
 /* compare two strings */
 bool string_eq(string_handle h1, string_handle h2);
-
-#undef EXTERN

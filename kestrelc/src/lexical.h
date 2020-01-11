@@ -32,6 +32,9 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include "errors.h"
+#include "stringpool.h"
+#include "symboltable.h"
 
 /******************************************************************************
  * character identification

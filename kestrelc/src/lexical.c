@@ -37,8 +37,6 @@
 #include <inttypes.h>
 #include "kestrelc.h"
 #include "lexical.h"
-#include "errors.h"
-#include "symboltable.h"
 
 static int ch;          /* current char not yet part of a lexeme */
 static FILE *infile;    /* the input file */

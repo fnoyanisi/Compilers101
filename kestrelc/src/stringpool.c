@@ -30,8 +30,22 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define EXTERN
 #include "stringpool.h"
+
+/* an index within [0 ~ POOL_SIZE-1] range to address the strings */
+typedef uint32_t string_handle;
+
+/* main buffer to store all the text */
+unsigned char _string_pool[POOL_SIZE];
+
+/* index of the next free location */
+string_handle _string_limit;
+
+/* position to store new characters added to the _string_pool */
+string_handle _string_pos;
+
+/* the line number on which the string is starting */
+string_handle _string_line;
 
 void string_put(string_handle h, FILE *f) {
     int limit = h + 2 + _string_pool[h] + (_string_pool[h+1] << 8);
