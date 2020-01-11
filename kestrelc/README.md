@@ -6,7 +6,7 @@ Kestrel is a simple programming language designed as a target for a [compiler co
 This implementation of Kestrel compiler closely follows the concepts taught in the course (hence, if you follow the lecture notes, you should be able to understand the code) but there are some slight differences at times. For instance, [Unity](http://www.throwtheswitch.org/unity), a unit test framework for C, is used to write unit tests or [cmake](https://cmake.org/overview/) rather than traditional UNIX Makefiles is used to automate the build.
 
 ## Implementation Notes
-TBC
+The compiler uses a single buffer, which has a set size (see `POOL_SIZE` in _stinrgpool.h_), to store all identifiers, character strings and keywords. The _string pool (stringpool.h and stringpool.c)_ behaves as the lower layer of the string storage API whereas _symbol table (symboltable.h and symboltable.c)_ provides an abstraction on top of _string pool_ and makes sure each string is stored only once. 
 
 ## Grammar 
 The ENBF grammar for Kestrel programming language is [here](http://homepage.divms.uiowa.edu/~jones/compiler/kestrel/kestrelEBNF.txt)
@@ -24,24 +24,17 @@ $ mkdir build
 Your directory structure must be 
 
 ```
-kestrelc
-     |
-     +-- build
-     |
-     +-- src
-     |
-     +-- test
-     |
-     +-- unity
-     |
-     +-- CMakeLists.txt
-     |
-     +-- LICENSE
-     |
-     +-- README.md
+kestrelc/
+|____CMakeLists.txt
+|____LICENSE
+|____README.md
+|____build/
+|____src/
+|____test/
+|____unity/
 ```
 
-Note, if you do not want to build the unit tests, you do not need to checkout the `Unity` framework, but the `test` directory will still be there in either case.
+Note, if you do not want to build the unit tests, you do not need to checkout the `Unity` framework (so the `unity` directory will not be in your file hierarchy), but the `test` directory will still be there in either case.
 
 To build the project with test
 
@@ -51,7 +44,7 @@ $ cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=yes ..
 $ cmake --build .
 ```
 
-or witout tests
+or without tests
 
 ```
 $ cd build
