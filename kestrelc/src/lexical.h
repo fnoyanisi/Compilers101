@@ -193,7 +193,7 @@ lexeme lex_next;    /* the next lexeme */
  * function declarations
  *****************************************************************************/
 
-char get_lex_ch(void);
+lexeme lex_get(void);
 void lex_open(const char *f);
 void lex_advance();
 void lex_put(lexeme *l, FILE *f);

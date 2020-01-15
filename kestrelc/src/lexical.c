@@ -40,8 +40,6 @@
 
 static int ch;          /* current char not yet part of a lexeme */
 static FILE *infile;    /* the input file */
-static int in_comment;
-static int in_string;
 static int line_number;
 
 static const char *punc_name[]= {
@@ -56,9 +54,9 @@ static const char *punc_name[]= {
     /* PT_NOT    */ "~",  /* PT_DOT    */ ".",  /* PT_NONE   */  "?WHAT?"
 };
 
-/* helper function */
-char get_lex_ch(void){
-    return ch;
+/* helper function that returns the current lexeme */
+lexeme lex_get(void){
+    return lex_this;
 }
 
 void lex_open(const char *f) {
@@ -71,12 +69,12 @@ void lex_open(const char *f) {
     } 
 
     ch = fgetc(infile);
-    in_comment = 0;
-    in_string = 0;
     line_number = 1;
 
     lex_this.type = NONE;
     lex_this.value = 0;
+    lex_this.line = line_number;
+    lex_this.pos = 1;
 
     lex_advance();
 }
@@ -175,7 +173,7 @@ void lex_advance() {
         do {
             symbol_append(ch);
             ch = getc(infile);
-        } while (ch != EOF || ISCLASS(ch, LETTER | NUMBER));
+        } while (ch != EOF && ISCLASS(ch, LETTER | NUMBER));
         lex_next.value = symbol_lookup();
         
     } else if (ch == '\'' || ch == '"'){
