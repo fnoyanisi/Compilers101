@@ -45,7 +45,7 @@ string_handle _string_limit;
 string_handle _string_pos;
 
 /* the line number on which the string is starting */
-string_handle _string_line;
+unsigned int _string_line;
 
 void string_put(string_handle h, FILE *f) {
     int limit = h + 2 + _string_pool[h] + (_string_pool[h+1] << 8);

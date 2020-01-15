@@ -52,7 +52,7 @@ extern string_handle _string_limit;
 extern string_handle _string_pos;
 
 /* the line number on which the string is starting */
-extern string_handle _string_line;
+extern unsigned int _string_line;
 
 /*
  *    <-------------------- POOL_SIZE ---------------------> 
