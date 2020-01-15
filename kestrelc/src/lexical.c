@@ -40,7 +40,12 @@
 
 static int ch;          /* current char not yet part of a lexeme */
 static FILE *infile;    /* the input file */
-static int line_number;
+static unsigned int lex_line;
+static unsigned int lex_pos = 0;
+
+/* to keep track of the position in the line */
+#define lex_getc(ch)            (lex_pos++, getc(ch))
+#define lex_ungetc(ch, file)    (lex_pos--, ungetc(ch, file))
 
 static const char *punc_name[]= {
     /* PT_SEMI   */ ";",  /* PT_EQUALS */ "=",  /* PT_COLON  */  ":",
@@ -68,12 +73,12 @@ void lex_open(const char *f) {
         exit(EXIT_FAILURE);
     } 
 
-    ch = fgetc(infile);
-    line_number = 1;
+    ch = lex_getc(infile);
+    lex_line = 1;
 
     lex_this.type = NONE;
     lex_this.value = 0;
-    lex_this.line = line_number;
+    lex_this.line = lex_line;
     lex_this.pos = 1;
 
     lex_advance();
@@ -86,9 +91,9 @@ void lex_advance() {
     /* skip whitespace */
     while(ISCLASS(ch, WHITESPACE)) {
         if (ch == '\n') /* CR */
-            line_number++;
+            lex_line++;
 
-        if ((ch = fgetc(infile)) == EOF) {
+        if ((ch = lex_getc(infile)) == EOF) {
             if (ferror(infile)) {
                 perror(NULL);
                 exit(EXIT_FAILURE);
@@ -98,14 +103,15 @@ void lex_advance() {
 
     /* handle comments */
     while(ch == '-') {
-        if ((next_ch = getc(infile)) == '-'){
+        if ((next_ch = lex_getc(infile)) == '-'){
             do {
-                ch = getc(infile);
+                ch = lex_getc(infile);
+                lex_pos++;
             }  while(ch != '\n');
-            line_number++;
+            lex_line++;
             ch = getc(infile);
         } else {
-            ungetc(next_ch, infile);
+            lex_ungetc(next_ch, infile);
             break;
         }
     }
@@ -122,12 +128,12 @@ void lex_advance() {
         do {
             /* check for overflow */
             if (lex_next.value > ((UINT32_MAX - (ch - '0')) / 10)){
-                error_warn(ER_TOOBIG, line_number);
+                error_warn(ER_TOOBIG, lex_line);
             } else {
             /* accumulate value of the digit */
                 lex_next.value = (lex_next.value * 10) + (ch - '0');
             }
-            ch = fgetc(infile);
+            ch = lex_getc(infile);
         } while ((ch >= '0') && (ch <= '9'));
         /* =BUG= what if a # leads into an odd number base? */
     } else if (ISCLASS(ch, PUNCTUATION)) { 
@@ -138,7 +144,7 @@ void lex_advance() {
 
         /* multi-char punctuation */
         if (ch == '/' || ch == '>' || ch == '<') {
-            if ((next_ch = getc(infile)) == '=') {
+            if ((next_ch = lex_getc(infile)) == '=') {
                 switch (ch) {
                 case '/':
                     lex_next.value = PT_NOTEQL;
@@ -150,12 +156,12 @@ void lex_advance() {
                     lex_next.value = PT_GE;
                     break;
                 default:
-                    ungetc(next_ch, infile);
+                    lex_ungetc(next_ch, infile);
                 }
             } 
         }
 
-        if ((ch = fgetc(infile)) == EOF) {
+        if ((ch = lex_getc(infile)) == EOF) {
             if (ferror(infile)) {
                 fclose(infile);
                 perror(NULL);
@@ -168,11 +174,11 @@ void lex_advance() {
     } else if (ISCLASS(ch, LETTER)) { 
         /* identifier */
         lex_next.type = IDENT; /* keyword or identifier */
-        symbol_start(line_number);
+        symbol_start(lex_line);
 
         do {
             symbol_append(ch);
-            ch = getc(infile);
+            ch = lex_getc(infile);
         } while (ch != EOF && ISCLASS(ch, LETTER | NUMBER));
         lex_next.value = symbol_lookup();
         
@@ -184,7 +190,7 @@ void lex_advance() {
 
         /* no lexeme assignments, just skip */
 
-        if ((ch = fgetc(infile)) == EOF) {
+        if ((ch = lex_getc(infile)) == EOF) {
             if (ferror(infile)) {
                 fclose(infile);
                 perror(NULL);
