@@ -136,9 +136,9 @@ void tearDown(void){
 }
 
 /* 
- * lex_open should sucessfuly read the first char and then call
- * lex_advance(), hence after calling lex_open(), ch should have
- * the value of the second char in the buf
+ * lex_open should sucessfuly read the first lexeme and then call
+ * lex_advance(), hence after calling lex_open(), lex_get should 
+ * return "putstr" as the first identified lexeme
  */
 void test_lex_open(void) {
   const char *buf[] = {"putstr( \"Hello world\"+LF, output )"};
@@ -166,19 +166,39 @@ void test_lex_open(void) {
   free(p);
 }
 
+/*
+ * check to see wheter the line numbering work properly
+ */
+void test_line_number(void) {
+  int i, len = 4;
+  const char *series[]= {"1","2","3","4"};
+  lexeme l;
+
+  write_s_file(series, len);
+  lex_open(s_file);
+
+  for (i=1; i<5; i++){
+    l = lex_get();
+    TEST_ASSERT_EQUAL_INT(i, l.line);
+    lex_advance();
+  }
+}
+
 /* 
  * the lexer should ignore white spaces and only store the numeric 
  * values in lex_next.value
  */
-void test_numeric(){
+void test_numeric(void){
   int i, len = 9;
   const char *series[]= {"   1","2","3","4","5","6","7","8","9"};
+  lexeme l;
   
   write_s_file(series, len);
 
   lex_open(s_file);
   for (i=1; i < 10; i++) {
-    TEST_ASSERT_EQUAL_INT(i, lex_next.value);
+    l = lex_get();
+    TEST_ASSERT_EQUAL_INT(i, l.value);
     lex_advance();
   }
 }
@@ -237,6 +257,7 @@ void test_comment(){
 int main(int argc, const char * argv[]) {
   UNITY_BEGIN();
     RUN_TEST(test_lex_open);
+    RUN_TEST(test_line_number);
     RUN_TEST(test_numeric);
     RUN_TEST(test_punct);
     RUN_TEST(test_multi_punct);
