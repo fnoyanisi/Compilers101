@@ -6,7 +6,11 @@ Kestrel is a simple programming language designed as a target for a [compiler co
 This implementation of Kestrel compiler closely follows the concepts taught in the course (hence, if you follow the lecture notes, you should be able to understand the code) but there are some slight differences at times. For instance, [Unity](http://www.throwtheswitch.org/unity), a unit test framework for C, is used to write unit tests or [cmake](https://cmake.org/overview/) rather than traditional UNIX Makefiles is used to automate the build.
 
 ## Implementation Notes
+
+### Strings and identifiers in the lexer
 The compiler uses a single buffer, which has a set size (see `POOL_SIZE` in _stinrgpool.h_), to store all identifiers, character strings and keywords. The _string pool (stringpool.h and stringpool.c)_ behaves as the lower layer of the string storage API whereas _symbol table (symboltable.h and symboltable.c)_ provides an abstraction on top of _string pool_ and makes sure each string is stored only once. 
+
+Hash value of each string is used as an index within `_symbol_table[]` to store the references to the starting position of that string within `_string_pool[]`. If the lookup for `_symbol_table[HASH_FOR_STRING]` returns `STRING_NUL`, then the string has not been stored before and the start location of the character string within `_string_pool[]`, which is `_string_limit` and obtained by `_symbol_string = string_start(line)` in _symboltable.h_, is saved at `_symbol_table[HASH_FOR_STRING]`. 
 
 ## Grammar 
 The ENBF grammar for Kestrel programming language is [here](http://homepage.divms.uiowa.edu/~jones/compiler/kestrel/kestrelEBNF.txt)
