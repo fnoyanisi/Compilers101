@@ -40,12 +40,24 @@
 
 static int ch;          /* current char not yet part of a lexeme */
 static FILE *infile;    /* the input file */
-static unsigned int lex_line;
-static unsigned int lex_pos = 0;
+static unsigned int line_number;
+static unsigned int pos = 0;
+
+/* 
+ * Helper macro to set the value of lex_next
+ * 
+ * void lex_set(lex_types, uint32_t) 
+ */
+#define lex_set(t, v) {                                   \
+              lex_next.type = t;                          \
+              lex_next.value = v;                         \
+              lex_next.line = line_number;                \
+              lex_next.pos = pos;                         \
+}
 
 /* to keep track of the position in the line */
-#define lex_getc(ch)            (lex_pos++, getc(ch))
-#define lex_ungetc(ch, file)    (lex_pos--, ungetc(ch, file))
+#define lex_getc(ch)            (pos++, getc(ch))
+#define lex_ungetc(ch, file)    (pos--, ungetc(ch, file))
 
 static const char *punc_name[]= {
     /* PT_SEMI   */ ";",  /* PT_EQUALS */ "=",  /* PT_COLON  */  ":",
@@ -59,9 +71,9 @@ static const char *punc_name[]= {
     /* PT_NOT    */ "~",  /* PT_DOT    */ ".",  /* PT_NONE   */  "?WHAT?"
 };
 
-/* helper function that returns the current lexeme */
+/* helper function that returns lex_next */
 lexeme lex_get(void){
-    return lex_this;
+    return lex_next;
 }
 
 void lex_open(const char *f) {
@@ -73,13 +85,13 @@ void lex_open(const char *f) {
         exit(EXIT_FAILURE);
     } 
 
+    line_number = 1;
     ch = lex_getc(infile);
-    lex_line = 1;
 
     lex_this.type = NONE;
     lex_this.value = 0;
-    lex_this.line = lex_line;
-    lex_this.pos = 1;
+    lex_this.line = line_number;
+    lex_this.pos = 0;
 
     lex_advance();
 }
@@ -91,7 +103,7 @@ void lex_advance() {
     /* skip whitespace */
     while(ISCLASS(ch, WHITESPACE)) {
         if (ch == '\n') /* CR */
-            lex_line++;
+            line_number++;
 
         if ((ch = lex_getc(infile)) == EOF) {
             if (ferror(infile)) {
@@ -106,9 +118,9 @@ void lex_advance() {
         if ((next_ch = lex_getc(infile)) == '-'){
             do {
                 ch = lex_getc(infile);
-                lex_pos++;
+                pos++;
             }  while(ch != '\n');
-            lex_line++;
+            line_number++;
             ch = getc(infile);
         } else {
             lex_ungetc(next_ch, infile);
@@ -118,20 +130,17 @@ void lex_advance() {
 
     if (ch == EOF) {
         /* end of file */ 
-        lex_next.type = ENDFILE;
-        lex_next.value = 0;
+        lex_set(ENDFILE, 0);
     } else if ((ch >= '0') && (ch <= '9')) {
         /* decimal digit */
-        lex_next.type = NUMBER;
-        lex_next.value = 0;
-        
+        lex_set(NUMBER, 0);
         do {
             /* check for overflow */
             if (lex_next.value > ((UINT32_MAX - (ch - '0')) / 10)){
-                error_warn(ER_TOOBIG, lex_line);
+                error_warn(ER_TOOBIG, line_number);
             } else {
             /* accumulate value of the digit */
-                lex_next.value = (lex_next.value * 10) + (ch - '0');
+                lex_set(NUMBER, ((lex_next.value * 10) + (ch - '0')));
             }
             ch = lex_getc(infile);
         } while ((ch >= '0') && (ch <= '9'));
@@ -139,21 +148,20 @@ void lex_advance() {
     } else if (ISCLASS(ch, PUNCTUATION)) { 
 
         /* punctuation */
-        lex_next.type = PUNCT;
-        lex_next.value = punc_class[ch];
+        lex_set(PUNCT, punc_class[ch]);
 
         /* multi-char punctuation */
         if (ch == '/' || ch == '>' || ch == '<') {
             if ((next_ch = lex_getc(infile)) == '=') {
                 switch (ch) {
                 case '/':
-                    lex_next.value = PT_NOTEQL;
+                    lex_set(PUNCT, PT_NOTEQL);
                     break;
                 case '<':
-                    lex_next.value = PT_LE;
+                    lex_set(PUNCT, PT_LE);
                     break;
                 case '>':
-                    lex_next.value = PT_GE;
+                    lex_set(PUNCT, PT_GE);
                     break;
                 default:
                     lex_ungetc(next_ch, infile);
@@ -173,14 +181,13 @@ void lex_advance() {
         }
     } else if (ISCLASS(ch, LETTER)) { 
         /* identifier */
-        lex_next.type = IDENT; /* keyword or identifier */
-        symbol_start(lex_line);
+        symbol_start(line_number);
 
         do {
             symbol_append(ch);
             ch = lex_getc(infile);
         } while (ch != EOF && ISCLASS(ch, LETTER | NUMBER));
-        lex_next.value = symbol_lookup();
+        lex_set(IDENT, symbol_lookup());
         
     } else if (ch == '\'' || ch == '"'){
         /* strings */
