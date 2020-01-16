@@ -190,8 +190,24 @@ void lex_advance() {
         lex_set(IDENT, symbol_lookup());
         
     } else if (ch == '\'' || ch == '"'){
-        /* strings */
-        printf("none\n");
+        /* string */
+        char quote = ch; /* remember which quote mark to use */
+
+        symbol_start(line_number);
+        ch = lex_getc(infile);
+
+        while (ch != EOF && ch != '\n' && ch != quote){
+            symbol_append(ch);
+            ch = lex_getc(infile);
+        }
+
+        if (ch == quote){
+            lex_set(STRING, symbol_lookup());
+            ch = lex_getc(infile);
+        } else { 
+            error_warn(ER_BADSTR, line_number);
+        }
+
     } else {
         /* other */
 
