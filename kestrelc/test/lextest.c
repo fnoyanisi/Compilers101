@@ -117,6 +117,8 @@ void setUp(void){
 
   lex_next.type = NONE;
   lex_next.value = 0;
+
+  string_init();
 }
 
 /* Executed after each unit test */
@@ -155,7 +157,7 @@ void test_lex_open(void) {
   lex_open(s_file);
   act = lex_get();
 
-  if ((p = symbol_get(lex_this.value)) == NULL)
+  if ((p = symbol_get(lex_next.value)) == NULL)
     TEST_FAIL_MESSAGE("test_lex_open : symbol_get() failed");
 
   TEST_ASSERT_EQUAL_INT(act.type, exp.type);
@@ -182,6 +184,23 @@ void test_line_number(void) {
     TEST_ASSERT_EQUAL_INT(i, l.line);
     lex_advance();
   }
+}
+
+void test_string(void) {
+  int i, len = 1;
+  const char *str[] = {"'testing'"};
+  lexeme l;
+  char *p;
+
+  write_s_file(str, len);
+  lex_open(s_file);
+
+  l = lex_get();
+
+  /* without quotes */
+  p = symbol_get(lex_next.value);
+  TEST_ASSERT_EQUAL_STRING("testing",p);
+  free(p);
 }
 
 /* 
@@ -258,6 +277,7 @@ int main(int argc, const char * argv[]) {
   UNITY_BEGIN();
     RUN_TEST(test_lex_open);
     RUN_TEST(test_line_number);
+    RUN_TEST(test_string);
     RUN_TEST(test_numeric);
     RUN_TEST(test_punct);
     RUN_TEST(test_multi_punct);
