@@ -86,7 +86,13 @@ void symbol_init();
  * 
  * void symbol_put(symbol_handle s, FILE *f);
  */
-#define symbol_put(s, f) { string_put(symbol_table[s], f); }
+#define symbol_put(s, f) { string_put(_symbol_table[s], f); }
 
 /* check whether a symbol has already been added into strin pool or not */
 symbol_handle symbol_lookup();
+
+/* 
+ * returns the string representation of the symbol. the buffer has to be
+ * free()'ed by the caller
+ */
+char *symbol_get(symbol_handle);

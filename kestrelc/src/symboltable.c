@@ -30,6 +30,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <stdlib.h>
 #include "errors.h"
 #include "stringpool.h"
 #include "symboltable.h"
@@ -59,11 +60,13 @@ symbol_handle symbol_lookup(){
         if (_symbol_table[place] == STRING_NUL) {
             /* add symbol to the table */
             _symbol_table[place] = _symbol_string;
+            string_done();
             string_accept();
             return place;
         }
         if (string_eq(_symbol_table[place], _symbol_string)) {
             /* symbol is already in the table */
+             string_done();
             string_reject();
             return place;
         }
@@ -74,4 +77,20 @@ symbol_handle symbol_lookup(){
         if (place == _symbol_hash)
             error_fatal(ER_SYMTAB, _symbol_line);
     }
+}
+
+/* caller has to free the buffer returned by symbol_get */
+char *symbol_get(symbol_handle hash){
+    string_handle h = _symbol_table[hash];
+    size_t len = (_string_pool[h+1] << 8) + _string_pool[h];
+    char *p;
+    int i;
+
+    if ((p = malloc (len + 1)) != NULL) {
+        for (i = 0; i<len; i++){
+            p[i] = _string_pool[h+2+i];
+        }
+        p[len] = '\0';
+    }
+    return p;
 }
