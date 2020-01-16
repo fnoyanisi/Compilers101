@@ -142,11 +142,28 @@ void tearDown(void){
  */
 void test_lex_open(void) {
   const char *buf[] = {"putstr( \"Hello world\"+LF, output )"};
-  
+  lexeme exp, act;
+  char *p;
+
+  exp.type = IDENT;   /* type of the lexeme */
+  exp.value = 0;      /* do not compare this field */
+  exp.line = 1;       /* current line number */
+  exp.pos = 7;        /* one char pass the last one */
+
   write_s_file(buf,1);
 
   lex_open(s_file);
-  TEST_ASSERT_EQUAL_CHAR(buf[0][1], get_lex_ch());
+  act = lex_get();
+
+  if ((p = symbol_get(lex_this.value)) == NULL)
+    TEST_FAIL_MESSAGE("test_lex_open : symbol_get() failed");
+
+  TEST_ASSERT_EQUAL_INT(act.type, exp.type);
+  TEST_ASSERT_EQUAL_STRING("putstr", p);
+  TEST_ASSERT_EQUAL_INT(act.line, exp.line);
+  TEST_ASSERT_EQUAL_INT(act.pos, exp.pos);
+
+  free(p);
 }
 
 /* 
