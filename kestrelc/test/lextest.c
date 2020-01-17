@@ -150,7 +150,7 @@ void test_lex_open(void) {
   exp.type = IDENT;   /* type of the lexeme */
   exp.value = 0;      /* do not compare this field */
   exp.line = 1;       /* current line number */
-  exp.pos = 7;        /* one char pass the last one */
+  exp.pos = 1;        /* one char pass the last one */
 
   write_s_file(buf,1);
 
