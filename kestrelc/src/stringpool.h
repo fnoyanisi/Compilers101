@@ -30,6 +30,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef _STRINGPOOL_H_
+#define _STRINGPOOL_H_
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -137,3 +140,5 @@ void string_put(string_handle h, FILE *f);
 
 /* compare two strings */
 bool string_eq(string_handle h1, string_handle h2);
+
+#endif

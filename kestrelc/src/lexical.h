@@ -30,6 +30,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef _LEXICAL_H_
+#define _LEXICAL_H_
+
 #include <stdio.h>
 #include <stdint.h>
 #include "errors.h"
@@ -197,3 +200,5 @@ lexeme lex_get(void);
 void lex_open(const char *f);
 void lex_advance();
 void lex_put(lexeme *l, FILE *f);
+
+#endif

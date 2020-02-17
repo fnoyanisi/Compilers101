@@ -30,5 +30,10 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef _KESTREL_H_
+#define _KESTREL_H_
+
 #include <stdio.h>
 #include <stdlib.h>
+
+#endif

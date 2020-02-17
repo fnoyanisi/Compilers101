@@ -30,6 +30,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef _SYMBOLTABLE_H_
+#define _SYMBOLTABLE_H_
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -96,3 +99,5 @@ symbol_handle symbol_lookup();
  * free()'ed by the caller
  */
 char *symbol_get(symbol_handle);
+
+#endif

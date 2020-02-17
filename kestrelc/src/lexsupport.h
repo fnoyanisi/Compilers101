@@ -24,10 +24,15 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef _LEXSUPPORT_H_
+#define _LEXSUPPORT_H_
+
 #include "sets.h"
 
 /* bool lex_ispuncset(lexeme lex, set32_t s); */
 #define lex_ispuncset(lex, s) (                                     \
-                (lex.type == LEX_PUNC) && in_set32_(lex.value, s))
+                (lex.type == LEX_PUNC) && in_set32(lex.value, s))
 
 #define lex_ispunc(lex, t) ((lex.type == LEX_PUNC) && (lex.value == t))
+
+#endif
