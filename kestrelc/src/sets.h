@@ -30,6 +30,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef _SETS_H_
+#define _SETS_H_
+
 #include <stdint.h>
 
 /* sets.h a fast lightweight implementation of set operations */
@@ -65,3 +68,5 @@ typedef uint32_t set32_t;
 
 /* set32_t to_set32_4( int i, int j, int k, int l ) */
 #define to_set32_4(i,j,k,l) (to_set32_2(i,j) | to_set32_2(k,l))
+
+#endif
