@@ -48,6 +48,17 @@ static unsigned int pos = 0;
 #define lex_getc(ch)            (pos++, getc(ch))
 #define lex_ungetc(ch, file)    (pos--, ungetc(ch, file))
 
+/* this has to be in the same order as lex_types */
+const char *lex_name[]= {
+    /* NONE     */  "NONE",
+    /* IDENT    */  "IDENT", 
+    /* KEYWORD  */  "KEYWORD", 
+    /* NUMBER   */  "NUMBER", 
+    /* STRING   */  "STRING", 
+    /* PUNCT    */  "PUNCT", 
+    /* ENDFILE  */  "ENDFILE"
+}; 
+
 static const char *punc_name[]= {
     /* PT_SEMI   */ ";",  /* PT_EQUALS */ "=",  /* PT_COLON  */  ":",
     /* PT_LPAREN */ "(",  /* PT_LBRAKT */ "[",  /* PT_LBRACE */  "{",
