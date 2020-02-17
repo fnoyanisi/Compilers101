@@ -27,12 +27,13 @@
 #ifndef _LEXSUPPORT_H_
 #define _LEXSUPPORT_H_
 
+#include "lexical.h"
 #include "sets.h"
 
 /* bool lex_ispuncset(lexeme lex, set32_t s); */
 #define lex_ispuncset(lex, s) (                                     \
                 (lex.type == LEX_PUNC) && in_set32(lex.value, s))
 
-#define lex_ispunc(lex, t) ((lex.type == LEX_PUNC) && (lex.value == t))
+#define lex_ispunc(lex, t) ((lex.type == PUNCT) && (lex.value == t))
 
 #endif
