@@ -32,6 +32,8 @@
 
 #ifndef _ERRORS_H_
 #define _ERRORS_H_
+
+#include "lexical.h"
 typedef enum {
     ER_BADFILE,
     ER_TOOBIG,
@@ -41,8 +43,8 @@ typedef enum {
     ER_BADSTR
 } error_message;
 
-void error_fatal(error_message, int line);
-void error_warn(error_message, int line);
-void error_gotbutwant(char *got, char *want);
+void error_fatal(error_message, int);
+void error_warn(error_message, int);
+void error_unexpected(lexeme, lexeme, int);
 
 #endif

@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "errors.h"
+#include "lexical.h"
 
 static const char *message[] = {
     /* ER_BADFILE */    "Cannot open input file",
@@ -44,10 +45,15 @@ static const char *message[] = {
 };
 
 void error_fatal(error_message er, int line){
-    fprintf(stderr, "Fatal error in line %d: %s", line, message[er]);
+    fprintf(stderr, "Fatal error in line %d: %s\n", line, message[er]);
     exit(EXIT_FAILURE);
 }
 
 void error_warn(error_message er, int line){
-    fprintf(stderr, "Error on line %d: %s", line, message[er]);
+    fprintf(stderr, "Error on line %d: %s\n", line, message[er]);
+}
+
+void error_unexpected(lexeme got, lexeme exp, int line) {
+    fprintf(stderr, "Error on line %d: Expecting lex_type %s but got %s\n", 
+        line,lex_name[exp.type], lex_name[got.type]);
 }
