@@ -35,13 +35,14 @@
 #include <string.h>
 #include <errno.h>
 #include <inttypes.h>
+#include "errors.h"
 #include "kestrelc.h"
 #include "lexical.h"
 #include "lexsupport.h"
 
 static int ch;          /* current char not yet part of a lexeme */
 static FILE *infile;    /* the input file */
-static unsigned int line_number;
+unsigned int line_number;
 static unsigned int pos = 0;
 
 /* to keep track of the position in the line */
@@ -59,7 +60,7 @@ const char *lex_name[]= {
     /* ENDFILE  */  "ENDFILE"
 }; 
 
-static const char *punc_name[]= {
+const char *punc_name[]= {
     /* PT_SEMI   */ ";",  /* PT_EQUALS */ "=",  /* PT_COLON  */  ":",
     /* PT_LPAREN */ "(",  /* PT_LBRAKT */ "[",  /* PT_LBRACE */  "{",
     /* PT_RPAREN */ ")",  /* PT_RBRAKT */ "]",  /* PT_RBRACE */  "}",
