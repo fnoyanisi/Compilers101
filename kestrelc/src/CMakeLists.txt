@@ -1,8 +1,8 @@
 project(kestrelc_prog)
 
 set(LEXICAL_SOURCES
-                    lexical.c errors.c symboltable.c stringpool.c
-                    lexical.h errors.h symboltable.h stringpool.h)
+                    lexical.c errors.c symboltable.c stringpool.c lexsupport.c
+                    lexical.h errors.h symboltable.h stringpool.h lexsupport.h)
 
 add_library(lexical STATIC ${LEXICAL_SOURCES})
 target_include_directories(lexical PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
