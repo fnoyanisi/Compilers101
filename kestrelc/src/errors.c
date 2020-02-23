@@ -53,7 +53,14 @@ void error_warn(error_message er, int line){
     fprintf(stderr, "Error on line %d: %s\n", line, message[er]);
 }
 
-void error_unexpected(lexeme got, lexeme exp, int line) {
+void error_unexpected(lex_types got, lex_types exp, int line) {
     fprintf(stderr, "Error on line %d: Expecting lex_type %s but got %s\n", 
-        line,lex_name[exp.type], lex_name[got.type]);
+        line,lex_name[exp], lex_name[got]);
+    exit(EXIT_FAILURE);
+}
+
+void error_punctype(punc_type got, punc_type exp, int line) {
+    fprintf(stderr, "Error on line %d: Expecting lex_type %s but got %s\n", 
+        line,punc_name[exp], punc_name[got]);
+    exit(EXIT_FAILURE);
 }

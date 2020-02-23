@@ -45,6 +45,7 @@ typedef enum {
 
 void error_fatal(error_message, int);
 void error_warn(error_message, int);
-void error_unexpected(lexeme, lexeme, int);
+void error_unexpected(lex_types, lex_types, int);
+void error_punctype(punc_type, punc_type, int);
 
 #endif
