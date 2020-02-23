@@ -1,6 +1,12 @@
 /*-
- * lexsupport.c
- * Copyright (c) 2019 Fehmi Noyan Isi
+ * lexupport.c
+ * 
+ * This implementation is following the theory in the Compiler Construction
+ * course given by Douglas W.Jones from The University of Iowa Department of 
+ * Computer Science
+ * http://homepage.divms.uiowa.edu/~jones/compiler/
+ * 
+ * Copyright (c) 2020 Fehmi Noyan Isi
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,23 +30,16 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _LEXSUPPORT_H_
-#define _LEXSUPPORT_H_
-
+#include <stdbool.h>
+#include "errors.h"
 #include "lexical.h"
-#include "sets.h"
+#include "lexsupport.h"
 
-/* Forces a lexeme to be of type PUNCT and specific punc_type */
-void lex_forcepunc(punc_type);
-
-/* bool lex_istype(lexeme lex, lex_types t); */
-#define lex_istype(lex, t) ((lex.type == t))
-
-/* bool lex_ispuncset(lexeme lex, set32_t s); */
-#define lex_ispuncset(lex, s) (                                     \
-                (lex_istype(lex,PUNCT) && in_set32(lex.value, s))
-
-/* bool lex_ispunc(lexeme lex, punc_type t); */
-#define lex_ispunc(lex, t) (lex_istype(lex,PUNCT) && (lex.value == t))
-
-#endif
+void lex_forcepunc(punc_type t) {
+        if (lex_ispunc(lex_this, t))
+                lex_advance();
+        else if (lex_istype(lex_this, PUNCT))
+                error_punctype(lex_this.value, t, line_number);
+        else
+                error_unexpected(lex_this.type, PUNCT, line_number); 
+}
