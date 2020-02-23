@@ -35,9 +35,10 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include "errors.h"
 #include "stringpool.h"
 #include "symboltable.h"
+
+extern unsigned line_number;
 
 /******************************************************************************
  * character identification
@@ -100,6 +101,7 @@ typedef enum {
     PT_MOD      /* % */,    PT_AND      /* & */,    PT_OR       /* | */,
     PT_NOT      /* ~ */,    PT_DOT      /* . */,    PT_NONE
 } punc_type;
+extern const char *punc_name[];
 
 #define SMI PT_SEMI
 #define EQU PT_EQUALS
