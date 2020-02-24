@@ -94,3 +94,12 @@ char *symbol_get(symbol_handle hash){
     }
     return p;
 }
+
+symbol_handle symbol_add(const char *s){
+    symbol_start(0);
+    while (*s != '\0') {
+        symbol_append(*s);
+        s++;
+    }
+    return symbol_lookup();
+}

@@ -100,4 +100,7 @@ symbol_handle symbol_lookup();
  */
 char *symbol_get(symbol_handle);
 
+/* Adds the null terminated string into symbol table and returns its handle */
+symbol_handle symbol_add(const char *);
+
 #endif
