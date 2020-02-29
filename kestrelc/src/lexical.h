@@ -37,6 +37,7 @@
 #include <stdint.h>
 #include "stringpool.h"
 #include "symboltable.h"
+#include "keywords.h"
 
 extern unsigned line_number;
 
