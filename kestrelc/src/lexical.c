@@ -98,6 +98,7 @@ void lex_open(const char *f) {
 }
 
 void lex_advance() {
+    key_handle key;
     char next_ch;
     lex_this = lex_next;
 
@@ -201,7 +202,9 @@ void lex_advance() {
             ch = lex_getc(infile);
         } while (ch != EOF && ISCLASS(ch, LETTER | NUMBER));
         lex_next.value = symbol_lookup();
-        
+
+        key = key_lookup(lex_next.value);
+
     } else if (ch == '\'' || ch == '"'){
         /* string */
         char quote = ch; /* remember which quote mark to use */
