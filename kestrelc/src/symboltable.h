@@ -40,6 +40,7 @@
 
 #define SYMBOL_SIZE 2048
 #define SYMBOL_HASH 31
+#define SYMBOL_INVALID  STRING_NUL
 
 /* The extern variables here are defined in symboltable.c */
 

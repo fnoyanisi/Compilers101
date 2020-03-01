@@ -50,14 +50,14 @@ int _symbol_line;
 void symbol_init(){
     symbol_handle i;
     for (i = 0; i < SYMBOL_SIZE; i++)
-        _symbol_table[i] = STRING_NUL;
+        _symbol_table[i] = SYMBOL_INVALID;
 }
 
 symbol_handle symbol_lookup(){
     symbol_handle place = _symbol_hash;
 
     for (;;) {
-        if (_symbol_table[place] == STRING_NUL) {
+        if (_symbol_table[place] == SYMBOL_INVALID) {
             /* add symbol to the table */
             _symbol_table[place] = _symbol_string;
             string_done();
@@ -66,7 +66,7 @@ symbol_handle symbol_lookup(){
         }
         if (string_eq(_symbol_table[place], _symbol_string)) {
             /* symbol is already in the table */
-             string_done();
+            string_done();
             string_reject();
             return place;
         }
