@@ -36,8 +36,17 @@
 #include "stringpool.h"
 #include "symboltable.h"
 
+/* 
+ * the best KEY_HASH_SIZE value is found by trialling several values and 
+ * comparing the number of observed collisions. See Lecture 14, Predefined
+ * Symbols and Keywords
+ */
+#define KEY_HASH_SIZE   89
+#define KEY_MAX 21 
+
+/* list of all the keywords in the language */
 typedef enum {
-        LEY_INVALID,
+        KEY_INVALID,
         KEY_END,        KEY_CONST,      KEY_FINAL,      KEY_TYPE,
         KEY_EXCEPTION,  KEY_VAR,        KEY_PROCEDURE,  KEY_FUNCTION,
         KEY_PRIVATE,    KEY_RESTRICTED, KEY_EXTERNAL,   KEY_ARRAY,
@@ -46,5 +55,23 @@ typedef enum {
         KEY_WHILE,      KEY_DO,         KEY_UNTIL,      KEY_FOR,
         KEY_IN,         KEY_CATCH,      KEY_RAISE,      KEY_NULL
 } key_handle;
+
+/* data structure to hold key - symbol pairs */
+typedef struct {
+        key_handle key;
+        symbol_handle sym;
+} key_item;
+
+/* initializer for the keyword interface */
+void key_init();
+
+/* outputs the indicated keyword ot a human readable file */
+void key_put(key_handle, FILE*);
+
+/* 
+ * returns the corresponading key_handle for the symbol, KEY_INVALID 
+ * if the requested symbol is not found, i.e. symbol is not a keyword
+ */
+key_handle key_lookup(symbol_handle);
 
 #endif
