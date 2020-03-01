@@ -41,7 +41,8 @@ static const char *message[] = {
     /* ER_POOLOVF */    "String pool buffer overflow",
     /* ER_TOOLONG */    "String is too long",
     /* ER_SYMTAB */     "Symbol error",
-    /* ER_BADSTR */     "Bad string"
+    /* ER_BADSTR */     "Bad string",
+    /* ER_SYMCOL */     "Symbol collusion"
 };
 
 void error_fatal(error_message er, int line){

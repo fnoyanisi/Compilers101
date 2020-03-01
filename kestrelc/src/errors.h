@@ -40,7 +40,8 @@ typedef enum {
     ER_POOLOVF,
     ER_TOOLONG,
     ER_SYMTAB,
-    ER_BADSTR
+    ER_BADSTR,
+    ER_SYMCOL
 } error_message;
 
 void error_fatal(error_message, int);
