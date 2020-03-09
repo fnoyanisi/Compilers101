@@ -31,9 +31,61 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <getopt.h>
+
+#include "kestrelc.h"
+
+int sflag;
+
+void usage() {
+    printf("usage: kestrelc [source_file] [-s] [-o output_file]\n");
+}
+
+static struct option longopts[] = {
+    {"outfile",     required_argument,      NULL,   'o'},
+    {"asm",         no_argument,            NULL,   's'}
+};
 
 int main(int argc, char **argv) {
-    printf("to be implemented\n");
+    FILE *in_fd, *out_fd;
+    int ch;
+    const char *optstr = "so:";
 
-    return 0;
+    /* defaults input and output */
+    in_fd = stdin;
+    out_fd = stdout;
+
+    while ((ch = getopt_long(argc, argv, optstr, longopts, NULL)) != -1) {
+        switch (ch) {
+            case 'o':
+                if ((out_fd = fopen(optarg, "w")) == NULL) {
+                    fprintf(stderr, "Cannot open output file %s.\n", optarg);
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 's':
+                sflag = 1;
+                break;
+            case '?':
+            default:
+                usage();
+        }
+    } 
+
+   if (optind >= argc) {
+        fprintf(stderr, "Expected argument after options\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* consume the non-opt argument, the input file name */
+    if (argv[optind] != NULL) {
+        if ((in_fd = fopen(argv[optind], "r")) == NULL) {
+                fprintf(stderr, "Cannot read from the input file : %s\n", 
+                    argv[optind]);
+                exit(EXIT_FAILURE);
+        }
+    }
+
+    return EXIT_SUCCESS;
 }

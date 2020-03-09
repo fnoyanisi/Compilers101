@@ -30,10 +30,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _KESTREL_H_
-#define _KESTREL_H_
+#ifndef _KESTRELC_H_
+#define _KESTRELC_H_
 
-#include <stdio.h>
-#include <stdlib.h>
+extern int sflag;
 
 #endif
