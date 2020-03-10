@@ -86,7 +86,7 @@ char *symbol_get(symbol_handle hash){
     char *p;
     int i;
 
-    if ((p = malloc (len + 1)) != NULL) {
+    if ((p = (char*) malloc (len + 1)) != NULL) {
         for (i = 0; i<len; i++){
             p[i] = _string_pool[h+2+i];
         }
