@@ -33,6 +33,6 @@
 #ifndef _KESTRELC_H_
 #define _KESTRELC_H_
 
-extern int sflag;
+extern bool sflag;
 
 #endif
