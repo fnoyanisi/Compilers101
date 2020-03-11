@@ -1,5 +1,5 @@
 /*-
- * kestrelc.c
+ * kestrelc.cpp
  * 
  * This implementation is following the theory in the Compiler Construction
  * course given by Douglas W.Jones from The University of Iowa Department of 
@@ -30,62 +30,48 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <getopt.h>
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <string>
+#include <vector>
 
 #include "kestrelc.h"
+#include "parseargs.h"
 
-int sflag;
+#define DEFAULT_NAME    "kestrelc"
 
-void usage() {
-    printf("usage: kestrelc [source_file] [-s] [-o output_file]\n");
+bool sflag, iflag, oflag;
+
+void 
+usage() {
+    std::cerr << "usage: kestrelc -i source_file [-s] -o output_file";
+    std::cerr << std::endl;
 }
 
-static struct option longopts[] = {
-    {"outfile",     required_argument,      NULL,   'o'},
-    {"asm",         no_argument,            NULL,   's'}
-};
+int 
+main(int argc, char **argv) {
+    std::ifstream in_file;
+    std::ofstream out_file;
+    std::string in_file_name, out_file_name;
 
-int main(int argc, char **argv) {
-    FILE *in_fd, *out_fd;
-    int ch;
-    const char *optstr = "so:";
-
-    /* defaults input and output */
-    in_fd = stdin;
-    out_fd = stdout;
-
-    while ((ch = getopt_long(argc, argv, optstr, longopts, NULL)) != -1) {
-        switch (ch) {
-            case 'o':
-                if ((out_fd = fopen(optarg, "w")) == NULL) {
-                    fprintf(stderr, "Cannot open output file %s.\n", optarg);
-                    exit(EXIT_FAILURE);
-                }
-                break;
-            case 's':
-                sflag = 1;
-                break;
-            case '?':
-            default:
-                usage();
-        }
-    } 
-
-   if (optind >= argc) {
-        fprintf(stderr, "Expected argument after options\n");
-        exit(EXIT_FAILURE);
+    try {
+        parse_args(argc, argv, "i:o:s");
+    } catch (std::invalid_argument& e) {
+        std:: cerr << e.what() << std::endl;
+        usage();
     }
 
-    /* consume the non-opt argument, the input file name */
-    if (argv[optind] != NULL) {
-        if ((in_fd = fopen(argv[optind], "r")) == NULL) {
-                fprintf(stderr, "Cannot read from the input file : %s\n", 
-                    argv[optind]);
-                exit(EXIT_FAILURE);
-        }
-    }
+                    // in_file.open(optarg);
+                    // if(in_file.is_open() == false)
+                    //     std::cerr << "Cannot open file " << optarg << 
+                    //         " for reading." << std::endl;
+                    // out_file.open(optarg);
+                    // if(out_file.is_open() == false)
+                    //     std::cerr << "Cannot open file " << optarg << 
+                    //         " for writing." << std::endl;
 
-    return EXIT_SUCCESS;
+    // Defaults
+
+    return(EXIT_SUCCESS);
 }
