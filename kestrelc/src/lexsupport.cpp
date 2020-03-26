@@ -30,12 +30,12 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdbool.h>
 #include "errors.h"
 #include "lexical.h"
 #include "lexsupport.h"
 
-void lex_forcepunc(punc_type t) {
+void 
+lex_forcepunc(punc_type t) {
         if (lex_ispunc(lex_this, t))
                 lex_advance();
         else if (lex_istype(lex_this, PUNCT))
