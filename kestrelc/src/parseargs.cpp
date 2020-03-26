@@ -103,9 +103,5 @@ std::map<char, std::string> parse_args(int argc, char **argv, std::string l) {
         } else
             throw std::invalid_argument("Invalid argumet: " + argv_i);
     }
-
-    for (auto &x: args)
-    std::cout << x.first << " " << x.second << std::endl;
-
     return args;
 }
