@@ -30,25 +30,17 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
-#include <errno.h>
-#include <inttypes.h>
+#include <iostream>
+#include <fstream>
+#include <cerrno>
 #include "errors.h"
 #include "kestrelc.h"
 #include "lexical.h"
 #include "lexsupport.h"
 
-static int ch;          /* current char not yet part of a lexeme */
-static FILE *infile;    /* the input file */
-unsigned int line_number;
-static unsigned int pos = 0;
-
 /* to keep track of the position in the line */
-#define lex_getc(ch)            (pos++, getc(ch))
-#define lex_ungetc(ch, file)    (pos--, ungetc(ch, file))
+#define lex_getc(file)          (pos++, file.get())
+#define lex_ungetc(file)        (pos--, file.unget())
 
 /* this has to be in the same order as lex_types */
 const char *lex_name[]= {
@@ -74,19 +66,19 @@ const char *punc_name[]= {
 };
 
 /* helper function that returns lex_next */
-lexeme lex_get(void){
+lexeme 
+lexer::lex_get(void){
     return lex_next;
 }
 
-void lex_open(const char *f) {
-    if (f == NULL) {
-         /* for the ability to pipe the source from stdin */
-        infile = stdin;
-    } else if ((infile = fopen(f,"r")) == NULL) {
-        perror(f);
+lexer::lexer(std::string f) {
+    infile.open(f);
+    if (infile.is_open() == false) {
+        std::cerr << "Error: " << strerror(errno);
         exit(EXIT_FAILURE);
     } 
 
+    pos = 0;
     line_number = 1;
     ch = lex_getc(infile);
 
@@ -98,7 +90,8 @@ void lex_open(const char *f) {
     lex_advance();
 }
 
-void lex_advance() {
+void 
+lexer::lex_advance() {
     key_handle key;
     char next_ch;
     lex_this = lex_next;
@@ -108,11 +101,10 @@ void lex_advance() {
         if (ch == '\n') /* CR */
             line_number++;
 
-        if ((ch = lex_getc(infile)) == EOF) {
-            if (ferror(infile)) {
-                perror(NULL);
-                exit(EXIT_FAILURE);
-            }
+        ch = lex_getc(infile);
+        if (infile.eof() && infile.fail()) {
+            std::cerr << "Error: " << strerror(errno);
+            exit(EXIT_FAILURE);
         }
     }
 
@@ -124,9 +116,9 @@ void lex_advance() {
                 pos++;
             }  while(ch != '\n');
             line_number++;
-            ch = getc(infile);
+            ch = infile.get();
         } else {
-            lex_ungetc(next_ch, infile);
+            lex_ungetc(infile);
             break;
         }
     }
@@ -176,15 +168,16 @@ void lex_advance() {
                     lex_next.value = PT_GE;
                     break;
                 default:
-                    lex_ungetc(next_ch, infile);
+                    lex_ungetc(infile);
                 }
             } 
         }
 
-        if ((ch = lex_getc(infile)) == EOF) {
-            if (ferror(infile)) {
-                fclose(infile);
-                perror(NULL);
+        ch = lex_getc(infile);
+        if (infile.eof()) {
+            if (infile.fail()) {
+                infile.close();
+                std::cerr << "Error: " << strerror(errno);
                 exit(EXIT_FAILURE);
             } else {
                 /* end of file */
@@ -233,10 +226,11 @@ void lex_advance() {
 
         /* no lexeme assignments, just skip */
 
-        if ((ch = lex_getc(infile)) == EOF) {
-            if (ferror(infile)) {
-                fclose(infile);
-                perror(NULL);
+        ch = lex_getc(infile);
+        if (infile.eof()){
+            if (infile.fail()) {
+                infile.close();
+                std::cerr << "Error: " << strerror(errno);
                 exit(EXIT_FAILURE);
             } else {
                 /* end of file */
@@ -246,18 +240,19 @@ void lex_advance() {
     }
 }
 
-void lex_put(lexeme *lex, FILE *f) {
+void 
+lexer::lex_put(const lexeme& lex, std::ofstream f) {
     /* reconstruct and output lex to file f */
-    switch (lex->type) {
+    switch (lex.type) {
         case IDENT:
         case KEYWORD:
         /* =BUG= missing code for these lexeme types */
             break;
         case NUMBER:
-            fprintf(f, "%" PRId32, lex->value);
+            f << lex.value;
             break;
         case PUNCT:
-            fputs(punc_name[lex->value],f);
+            f << punc_name[lex.value];
             break;
         case STRING:
         case ENDFILE:
