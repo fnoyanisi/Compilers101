@@ -39,9 +39,7 @@
 #include "kestrelc.h"
 #include "parseargs.h"
 
-#define DEFAULT_NAME    "kestrelc"
-
-bool sflag, iflag, oflag;
+bool sflag;
 
 void 
 usage() {
@@ -54,24 +52,38 @@ main(int argc, char **argv) {
     std::ifstream in_file;
     std::ofstream out_file;
     std::string in_file_name, out_file_name;
+    std::map<char, std::string> args;
 
     try {
-        parse_args(argc, argv, "i:o:s");
+        args = parse_args(argc, argv, "i:o:s");
     } catch (std::invalid_argument& e) {
         std:: cerr << e.what() << std::endl;
         usage();
+        exit(EXIT_FAILURE);
     }
 
-                    // in_file.open(optarg);
-                    // if(in_file.is_open() == false)
-                    //     std::cerr << "Cannot open file " << optarg << 
-                    //         " for reading." << std::endl;
-                    // out_file.open(optarg);
-                    // if(out_file.is_open() == false)
-                    //     std::cerr << "Cannot open file " << optarg << 
-                    //         " for writing." << std::endl;
+    if (args.find('s') != args.end())
+        sflag = true;
 
-    // Defaults
+    in_file_name = args.at('i');
+    out_file_name = args.at('o');
+
+    in_file.open(in_file_name);
+    if (in_file.is_open() == false) {
+        std::cerr << "Unable to open file for reading: " + in_file_name;
+        std::cerr << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    out_file.open(out_file_name);
+    if (out_file.is_open() == false) {
+        std::cerr << "Unable to open file for writing: " + in_file_name;
+        std::cerr << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    in_file.close();
+    out_file.close();
 
     return(EXIT_SUCCESS);
 }
