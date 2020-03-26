@@ -30,8 +30,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <iostream>
 #include "errors.h"
 #include "lexical.h"
 
@@ -45,23 +44,31 @@ static const char *message[] = {
     /* ER_SYMCOL */     "Symbol collusion"
 };
 
-void error_fatal(error_message er, int line){
-    fprintf(stderr, "Fatal error in line %d: %s\n", line, message[er]);
+void 
+error_fatal(error_message er, int line){
+    std::cerr << "Fatal error in line " << line << ": " << message[er];
+    std::cerr << std::endl;
     exit(EXIT_FAILURE);
 }
 
-void error_warn(error_message er, int line){
-    fprintf(stderr, "Error on line %d: %s\n", line, message[er]);
+void
+error_warn(error_message er, int line){
+    std::cerr << "Error on line " << line << ": " << message[er];
+    std::cerr << std::endl;
 }
 
-void error_unexpected(lex_types got, lex_types exp, int line) {
-    fprintf(stderr, "Error on line %d: Expecting lex_type %s but got %s\n", 
-        line,lex_name[exp], lex_name[got]);
+void 
+error_unexpected(lex_type got, lex_type exp, int line) {
+    std::cerr << "Error on line " << line << ": ";
+    std::cerr << "Expecting lex_type "<< lex_name[exp] << " but";
+    std::cerr << " got " << lex_name[got] << std::endl;
     exit(EXIT_FAILURE);
 }
 
-void error_punctype(punc_type got, punc_type exp, int line) {
-    fprintf(stderr, "Error on line %d: Expecting lex_type %s but got %s\n", 
-        line,punc_name[exp], punc_name[got]);
+void 
+error_punctype(punc_type got, punc_type exp, int line) {
+    std::cerr << "Error on line " << line << ": ";
+    std::cerr << "Expecting punc_type "<< punc_name[exp] << " but";
+    std::cerr << " got " << punc_name[got] << std::endl;
     exit(EXIT_FAILURE);
 }

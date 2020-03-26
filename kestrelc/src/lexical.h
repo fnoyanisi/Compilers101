@@ -33,8 +33,8 @@
 #ifndef _LEXICAL_H_
 #define _LEXICAL_H_
 
-#include <stdio.h>
-#include <stdint.h>
+#include <iostream>
+#include <fstream>
 #include "stringpool.h"
 #include "symboltable.h"
 #include "keywords.h"
@@ -44,9 +44,9 @@ extern unsigned line_number;
 /******************************************************************************
  * character identification
  *****************************************************************************/
-typedef enum {
+enum char_type {
     OTHER=0, WHITESPACE=1, LETTER=2, DIGIT=4, PUNCTUATION=8
-} char_type;
+};
 
 #define OTH OTHER
 #define WIT WHITESPACE
@@ -91,7 +91,7 @@ static const char_type char_class[256] = {
 /******************************************************************************
  * punctuation character type
  *****************************************************************************/
-typedef enum {
+enum punc_type {
     PT_SEMI     /* ; */,    PT_EQUALS   /* = */,    PT_COLON    /* : */,
     PT_LPAREN   /* ( */,    PT_LBRAKT   /* [ */,    PT_LBRACE   /* { */,
     PT_RPAREN   /* ) */,    PT_RBRAKT   /* ] */,    PT_RBRACE   /* } */,
@@ -101,7 +101,7 @@ typedef enum {
     PT_MINUS    /* - */,    PT_TIMES    /* * */,    PT_DIV      /* / */,
     PT_MOD      /* % */,    PT_AND      /* & */,    PT_OR       /* | */,
     PT_NOT      /* ~ */,    PT_DOT      /* . */,    PT_NONE
-} punc_type;
+};
 extern const char *punc_name[];
 
 #define SMI PT_SEMI
@@ -183,26 +183,34 @@ static const punc_type punc_class[256] = {
 /******************************************************************************
  * lexeme related definitions 
  *****************************************************************************/
-typedef enum {NONE, IDENT, KEYWORD, NUMBER, STRING, PUNCT, ENDFILE} lex_types;
+enum lex_type {NONE, IDENT, KEYWORD, NUMBER, STRING, PUNCT, ENDFILE};
 extern const char *lex_name[];
 
-typedef struct lexeme_t {
-    lex_types type;   
-    uint32_t value;
-    unsigned line;    /* line number of the lexeme */
-    unsigned pos;     /* zero-indexed start location within the line */
-} lexeme;
-
-lexeme lex_this;    /* the current lexeme */
-lexeme lex_next;    /* the next lexeme */
+class lexeme {
+    public:
+      lex_type type;   
+      uint32_t value;
+      unsigned line;    /* line number of the lexeme */
+      unsigned pos;     /* zero-indexed start location within the line */
+};
 
 /******************************************************************************
  * function declarations
  *****************************************************************************/
 
-lexeme lex_get(void);
-void lex_open(const char *f);
-void lex_advance();
-void lex_put(lexeme *l, FILE *f);
+class lexer {
+    private:
+      lexeme lex_this;          // the current lexeme
+      lexeme lex_next;          // the next lexeme
+      std::ifstream infile;
+      int ch;                   // current char not yet part of a lexeme
+      unsigned line_number;
+      static unsigned int pos;  // position within the line
+    public:
+      lexer(std::string);
+      lexeme lex_get(void);
+      void lex_advance();
+      void lex_put(const lexeme&, std::ofstream);
+};
 
 #endif

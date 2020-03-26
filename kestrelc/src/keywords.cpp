@@ -30,6 +30,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <iostream>
+#include <fstream>
 #include "errors.h"
 #include "keywords.h"
 #include "symboltable.h"
@@ -54,12 +56,14 @@ string_handle key_table[KEY_MAX + 1];
 key_item key_hash[KEY_HASH_SIZE];
 
 /* output the key to the human readable file */
-void key_put(key_handle k, FILE *f) {
-        fputs(key_names[k], f);
+void 
+key_put(key_handle k, std::ofstream f) {
+        f << key_names[k];
 }
 
 /* initializer for the lookup mechanism */
-void key_init() {
+void 
+key_init() {
         int i, hash;
         symbol_handle s;
 
@@ -86,7 +90,8 @@ void key_init() {
 /* 
  * returns the keyword handle corresposnding to the given symbol handle.
  * if the symbol handle is not a keyword, returns KEY_INVALID */
-key_handle key_lookup(symbol_handle s) {
+key_handle 
+key_lookup(symbol_handle s) {
         int hash = s % KEY_HASH_SIZE;
 
         if (key_hash[hash].sym == s)

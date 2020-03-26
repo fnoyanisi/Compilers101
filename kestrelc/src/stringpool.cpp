@@ -30,6 +30,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <iostream>
+#include <fstream>
 #include "stringpool.h"
 
 /* an index within [0 ~ POOL_SIZE-1] range to address the strings */
@@ -47,16 +49,18 @@ string_handle _string_pos;
 /* the line number on which the string is starting */
 unsigned int _string_line;
 
-void string_put(string_handle h, FILE *f) {
+void 
+string_put(string_handle h, std::ofstream f) {
     int limit = h + 2 + _string_pool[h] + (_string_pool[h+1] << 8);
     h = h + 2;
     while (h < limit) {
-        fputc(_string_pool[h], f);
-        h = h + 1;
+        f.put(_string_pool[h]);
+        h++;
     }
 }
 
-bool string_eq(string_handle h1, string_handle h2) {
+bool 
+string_eq(string_handle h1, string_handle h2) {
     int limit = h1 + 2 + _string_pool[h1] + (_string_pool[h1+1] << 8);
 
     /* if the length of the strings differ, return false */

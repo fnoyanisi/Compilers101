@@ -47,13 +47,15 @@ string_handle _symbol_string;
 /* line number on which tge string is found */
 int _symbol_line;
 
-void symbol_init(){
+void 
+symbol_init(){
     symbol_handle i;
     for (i = 0; i < SYMBOL_SIZE; i++)
         _symbol_table[i] = SYMBOL_INVALID;
 }
 
-symbol_handle symbol_lookup(){
+symbol_handle 
+symbol_lookup(){
     symbol_handle place = _symbol_hash;
 
     for (;;) {
@@ -80,7 +82,8 @@ symbol_handle symbol_lookup(){
 }
 
 /* caller has to free the buffer returned by symbol_get */
-char *symbol_get(symbol_handle hash){
+char *
+symbol_get(symbol_handle hash){
     string_handle h = _symbol_table[hash];
     size_t len = (_string_pool[h+1] << 8) + _string_pool[h];
     char *p;
@@ -95,7 +98,8 @@ char *symbol_get(symbol_handle hash){
     return p;
 }
 
-symbol_handle symbol_add(const char *s){
+symbol_handle 
+symbol_add(const char *s){
     symbol_start(0);
     while (*s != '\0') {
         symbol_append(*s);
