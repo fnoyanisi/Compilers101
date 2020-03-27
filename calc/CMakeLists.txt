@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.16)
   
 project(calc VERSION 1.0
         DESCRIPTION "Simple arithmetic calculator"
