@@ -33,14 +33,16 @@
 #include <iostream>
 #include <fstream>
 #include <cerrno>
+#include <string>
+
 #include "errors.h"
 #include "kestrelc.h"
 #include "lexical.h"
 #include "lexsupport.h"
 
 /* to keep track of the position in the line */
-#define lex_getc(file)          (pos++, file.get())
-#define lex_ungetc(file)        (pos--, file.unget())
+#define lex_getc(lxr, file)          (lxr->posinc(), file.get())
+#define lex_ungetc(lxr, file)        (lxr->posdec(), file.unget())
 
 /* this has to be in the same order as lex_types */
 const char *lex_name[]= {
@@ -67,25 +69,26 @@ const char *punc_name[]= {
 
 /* helper function that returns lex_next */
 lexeme 
-lexer::lex_get(void){
+lexer::lex_get(void) const {
     return lex_next;
 }
 
 lexer::lexer(std::string f) {
+    pos_ = 0;
+    line_number_ = 1;
+
     infile.open(f);
     if (infile.is_open() == false) {
         std::cerr << "Error: " << strerror(errno);
         exit(EXIT_FAILURE);
     } 
 
-    pos = 0;
-    line_number = 1;
-    ch = lex_getc(infile);
+    ch = lex_getc(this, infile);
 
-    lex_this.type = NONE;
-    lex_this.value = 0;
-    lex_this.line = line_number;
-    lex_this.pos = 0;
+    lex_this.type(NONE);
+    lex_this.value(0);
+    lex_this.line(line_number_);
+    lex_this.pos(pos_);
 
     lex_advance();
 }
@@ -97,128 +100,120 @@ lexer::lex_advance() {
     lex_this = lex_next;
 
     /* skip whitespace */
-    while(ISCLASS(ch, WHITESPACE)) {
-        if (ch == '\n') /* CR */
-            line_number++;
-
-        ch = lex_getc(infile);
-        if (infile.eof() && infile.fail()) {
-            std::cerr << "Error: " << strerror(errno);
-            exit(EXIT_FAILURE);
+    while(ch != std::char_traits<char>::eof() && ISCLASS(ch, WHITESPACE)) {
+        if (ch == '\n') {
+            line_number_++;
+            pos_ = 1;
         }
+
+        ch = lex_getc(this, infile);
     }
 
     /* handle comments */
     while(ch == '-') {
-        if ((next_ch = lex_getc(infile)) == '-'){
+        if ((next_ch = lex_getc(this, infile)) == '-'){
             do {
-                ch = lex_getc(infile);
-                pos++;
+                ch = lex_getc(this, infile);
+                pos_++;
             }  while(ch != '\n');
-            line_number++;
+            line_number_++;
+            pos_ = 1;
             ch = infile.get();
         } else {
-            lex_ungetc(infile);
+            lex_ungetc(this, infile);
             break;
         }
     }
 
-    if (ch == EOF) {
+    if (ch == std::char_traits<char>::eof()) {
         /* end of file */ 
-        lex_next.type = ENDFILE;
-        lex_next.value = 0;
-        lex_next.pos = pos;
-        lex_next.line = line_number;
+        lex_next.type(ENDFILE);
+        lex_next.value(0);
+        lex_next.pos(pos_);
+        lex_next.line(line_number_);
     } else if ((ch >= '0') && (ch <= '9')) {
         /* decimal digit */
-        lex_next.type = NUMBER;
-        lex_next.value = 0;
-        lex_next.pos = pos;
-        lex_next.line = line_number;
+        lex_next.type(NUMBER);
+        lex_next.value(0);
+        lex_next.pos(pos_);
+        lex_next.line(line_number_);
         do {
             /* check for overflow */
-            if (lex_next.value > ((UINT32_MAX - (ch - '0')) / 10)){
-                error_warn(ER_TOOBIG, line_number);
+            if (lex_next.value() > ((UINT32_MAX - (ch - '0')) / 10)){
+                error_warn(ER_TOOBIG, line_number_);
             } else {
             /* accumulate value of the digit */
-                lex_next.value = (lex_next.value * 10) + (ch - '0');
+                lex_next.value((lex_next.value() * 10) + (ch - '0'));
             }
-            ch = lex_getc(infile);
+            ch = lex_getc(this, infile);
         } while ((ch >= '0') && (ch <= '9'));
         /* =BUG= what if a # leads into an odd number base? */
     } else if (ISCLASS(ch, PUNCTUATION)) { 
 
         /* punctuation */
-        lex_next.type = PUNCT;
-        lex_next.value = punc_class[ch];
-        lex_next.pos = pos;
-        lex_next.line = line_number;
+        lex_next.type(PUNCT);
+        lex_next.value(punc_class[ch]);
+        lex_next.pos(pos_);
+        lex_next.line(line_number_);
 
         /* multi-char punctuation */
         if (ch == '/' || ch == '>' || ch == '<') {
-            if ((next_ch = lex_getc(infile)) == '=') {
+            if ((next_ch = lex_getc(this, infile)) == '=') {
                 switch (ch) {
                 case '/':
-                    lex_next.value = PT_NOTEQL;
+                    lex_next.value(PT_NOTEQL);
                     break;
                 case '<':
-                    lex_next.value = PT_LE;
+                    lex_next.value(PT_LE);
                     break;
                 case '>':
-                    lex_next.value = PT_GE;
+                    lex_next.value(PT_GE);
                     break;
                 default:
-                    lex_ungetc(infile);
+                    lex_ungetc(this, infile);
                 }
             } 
         }
 
-        ch = lex_getc(infile);
+        ch = lex_getc(this, infile);
         if (infile.eof()) {
-            if (infile.fail()) {
-                infile.close();
-                std::cerr << "Error: " << strerror(errno);
-                exit(EXIT_FAILURE);
-            } else {
-                /* end of file */
-                return;
-            }
+            return;
         }
     } else if (ISCLASS(ch, LETTER)) { 
         /* identifier */
-        symbol_start(line_number);
-        lex_next.type = IDENT;
-        lex_next.pos = pos;
-        lex_next.line = line_number;
+        symbol_start(line_number_);
+        lex_next.type(IDENT);
+        lex_next.pos(pos_);
+        lex_next.line(line_number_);
 
         do {
             symbol_append(ch);
-            ch = lex_getc(infile);
+            ch = lex_getc(this, infile);
         } while (ch != EOF && ISCLASS(ch, LETTER | NUMBER));
-        lex_next.value = symbol_lookup();
+        lex_next.value(symbol_lookup());
 
-        key = key_lookup(lex_next.value);
+        key = key_lookup(lex_next.value());
 
     } else if (ch == '\'' || ch == '"'){
         /* string */
         char quote = ch; /* remember which quote mark to use */
 
-        symbol_start(line_number);
-        ch = lex_getc(infile);
+        symbol_start(line_number_);
+        ch = lex_getc(this, infile);
 
         while (ch != EOF && ch != '\n' && ch != quote){
             symbol_append(ch);
-            ch = lex_getc(infile);
+            ch = lex_getc(this, infile);
         }
 
         if (ch == quote){
-            lex_next.type = STRING;
-            lex_next.value = symbol_lookup();
-            lex_next.pos = pos;
-            lex_next.line = line_number;
-            ch = lex_getc(infile);
+            lex_next.type(STRING);
+            lex_next.value(symbol_lookup());
+            lex_next.pos(pos_);
+            lex_next.line(line_number_);
+            ch = lex_getc(this, infile);
         } else { 
-            error_warn(ER_BADSTR, line_number);
+            error_warn(ER_BADSTR, line_number_);
         }
 
     } else {
@@ -226,7 +221,7 @@ lexer::lex_advance() {
 
         /* no lexeme assignments, just skip */
 
-        ch = lex_getc(infile);
+        ch = lex_getc(this, infile);
         if (infile.eof()){
             if (infile.fail()) {
                 infile.close();
@@ -241,18 +236,18 @@ lexer::lex_advance() {
 }
 
 void 
-lexer::lex_put(const lexeme& lex, std::ofstream f) {
+lexer::lex_put(const lexeme& lex, std::ofstream& f) {
     /* reconstruct and output lex to file f */
-    switch (lex.type) {
+    switch (lex.type()) {
         case IDENT:
         case KEYWORD:
         /* =BUG= missing code for these lexeme types */
             break;
         case NUMBER:
-            f << lex.value;
+            f << lex.value();
             break;
         case PUNCT:
-            f << punc_name[lex.value];
+            f << punc_name[lex.value()];
             break;
         case STRING:
         case ENDFILE:
@@ -260,4 +255,24 @@ lexer::lex_put(const lexeme& lex, std::ofstream f) {
         /* =BUG= missing code for these lexeme types */
             break;
     }
+}
+
+unsigned
+lexer::line_number() const {
+    return line_number_;
+}
+
+unsigned
+lexer::pos() const {
+    return pos_;
+}
+
+void
+lexer::posinc() {
+    pos_++;
+}
+
+void
+lexer::posdec() {
+    pos_--;
 }

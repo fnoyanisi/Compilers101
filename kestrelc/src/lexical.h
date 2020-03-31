@@ -187,11 +187,20 @@ enum lex_type {NONE, IDENT, KEYWORD, NUMBER, STRING, PUNCT, ENDFILE};
 extern const char *lex_name[];
 
 class lexeme {
+    private:
+      lex_type type_;   
+      uint32_t value_;
+      unsigned line_;    /* line number of the lexeme */
+      unsigned pos_;     /* zero-indexed start location within the line */
     public:
-      lex_type type;   
-      uint32_t value;
-      unsigned line;    /* line number of the lexeme */
-      unsigned pos;     /* zero-indexed start location within the line */
+      lex_type type() const { return type_; }
+      void type(lex_type t) { type_ = std::move(t); }
+      uint32_t value() const { return value_; }
+      void value(uint32_t v) { value_ = std::move(v); }
+      unsigned line() const { return line_; }
+      void line(unsigned l) { line_ = std::move(l); }
+      unsigned pos() const { return pos_; }
+      void pos(unsigned p) {pos_ = std::move(p); }
 };
 
 /******************************************************************************
@@ -204,13 +213,16 @@ class lexer {
       lexeme lex_next;          // the next lexeme
       std::ifstream infile;
       int ch;                   // current char not yet part of a lexeme
-      unsigned line_number;
-      static unsigned int pos;  // position within the line
+      unsigned pos_, line_number_;
     public:
       lexer(std::string);
-      lexeme lex_get(void);
+      lexeme lex_get() const;
       void lex_advance();
-      void lex_put(const lexeme&, std::ofstream);
+      void lex_put(const lexeme&, std::ofstream&);
+      unsigned line_number() const;
+      unsigned pos() const;
+      void posinc();
+      void posdec();
 };
 
 #endif
