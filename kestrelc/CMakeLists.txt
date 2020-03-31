@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(kestrelc
@@ -14,7 +14,6 @@ if (BUILD_TESTS STREQUAL no)
 # Nothing extra to do here
 elseif(BUILD_TESTS STREQUAL yes)
         include(CTest)
-        add_subdirectory(unity)
         add_subdirectory(test)
 else()
         message(FATAL_ERROR "Unknown BUILD_TESTS. Use either yes or no")
