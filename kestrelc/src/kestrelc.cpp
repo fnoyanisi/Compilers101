@@ -36,8 +36,8 @@
 #include <string>
 #include <vector>
 
-#include "kestrelc.h"
-#include "parseargs.h"
+#include "kestrelc.hpp"
+#include "parseargs.hpp"
 
 bool sflag;
 

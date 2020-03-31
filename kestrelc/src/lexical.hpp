@@ -35,9 +35,9 @@
 
 #include <iostream>
 #include <fstream>
-#include "stringpool.h"
-#include "symboltable.h"
-#include "keywords.h"
+#include "stringpool.hpp"
+#include "symboltable.hpp"
+#include "keywords.hpp"
 
 extern unsigned line_number;
 

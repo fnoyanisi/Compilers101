@@ -35,10 +35,10 @@
 #include <cerrno>
 #include <string>
 
-#include "errors.h"
-#include "kestrelc.h"
-#include "lexical.h"
-#include "lexsupport.h"
+#include "errors.hpp"
+#include "kestrelc.hpp"
+#include "lexical.hpp"
+#include "lexsupport.hpp"
 
 /* to keep track of the position in the line */
 #define lex_getc(lxr, file)          (lxr->posinc(), file.get())
@@ -140,7 +140,7 @@ lexer::lex_advance() {
         do {
             /* check for overflow */
             if (lex_next.value() > ((UINT32_MAX - (ch - '0')) / 10)){
-                error_warn(ER_TOOBIG, line_number_);
+                error_warn(error_message::ER_TOOBIG, line_number_);
             } else {
             /* accumulate value of the digit */
                 lex_next.value((lex_next.value() * 10) + (ch - '0'));
@@ -213,7 +213,7 @@ lexer::lex_advance() {
             lex_next.line(line_number_);
             ch = lex_getc(this, infile);
         } else { 
-            error_warn(ER_BADSTR, line_number_);
+            error_warn(error_message::ER_BADSTR, line_number_);
         }
 
     } else {

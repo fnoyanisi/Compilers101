@@ -1,5 +1,11 @@
 /*-
- * lexsupport.c
+ * errors.h
+ * 
+ * This implementation is following the theory in the Compiler Construction
+ * course given by Douglas W.Jones from The University of Iowa Department of 
+ * Computer Science
+ * http://homepage.divms.uiowa.edu/~jones/compiler/
+ * 
  * Copyright (c) 2019 Fehmi Noyan Isi
  * All rights reserved.
  *
@@ -24,23 +30,24 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _LEXSUPPORT_H_
-#define _LEXSUPPORT_H_
+#ifndef _ERRORS_H_
+#define _ERRORS_H_
 
-#include "lexical.h"
-#include "sets.h"
+#include "lexical.hpp"
 
-/* Forces a lexeme to be of type PUNCT and specific punc_type */
-void lex_forcepunc(punc_type);
+enum class error_message {
+    ER_BADFILE,
+    ER_TOOBIG,
+    ER_POOLOVF,
+    ER_TOOLONG,
+    ER_SYMTAB,
+    ER_BADSTR,
+    ER_SYMCOL
+};
 
-/* bool lex_istype(lexeme lex, lex_types t); */
-#define lex_istype(lex, t) ((lex.type == t))
-
-/* bool lex_ispuncset(lexeme lex, set32_t s); */
-#define lex_ispuncset(lex, s) (                                     \
-                (lex_istype(lex,PUNCT) && in_set32(lex.value, s))
-
-/* bool lex_ispunc(lexeme lex, punc_type t); */
-#define lex_ispunc(lex, t) (lex_istype(lex,PUNCT) && (lex.value == t))
+void error_fatal(error_message, int);
+void error_warn(error_message, int);
+void error_unexpected(lex_type, lex_type, int);
+void error_punctype(punc_type, punc_type, int);
 
 #endif

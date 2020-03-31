@@ -33,8 +33,8 @@
 #include <sstream>
 #include <vector>
 
-#include <lexical.h> 
-#include <symboltable.h>
+#include <lexical.hpp> 
+#include <symboltable.hpp>
 
 #include "catch.hpp"
 

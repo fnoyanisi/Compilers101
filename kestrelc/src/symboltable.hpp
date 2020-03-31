@@ -36,7 +36,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "stringpool.h"
+
+#include "stringpool.hpp"
 
 #define SYMBOL_SIZE 2048
 #define SYMBOL_HASH 31

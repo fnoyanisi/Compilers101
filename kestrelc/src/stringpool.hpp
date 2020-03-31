@@ -87,10 +87,10 @@ extern unsigned int _string_line;
  * 
  * string_handle string_start(int line);
  */
-#define string_start(line) (                                \
-            _string_line = line,                            \
-            _string_pos = _string_limit + 2,                \
-            _string_limit                                   \
+#define string_start(line) (                                            \
+            _string_line = line,                                        \
+            _string_pos = _string_limit + 2,                            \
+            _string_limit                                               \
 )
 
 /* 
@@ -98,12 +98,12 @@ extern unsigned int _string_line;
  * 
  * void string_append(char ch);
  */
-#define string_append(ch) {                                 \
-            if (_string_pos > (POOL_SIZE - 1)) {            \
-                error_fatal(ER_POOLOVF, _string_line);      \
-            }                                               \
-            _string_pool[_string_pos] = ch;                 \
-            _string_pos++;                                  \
+#define string_append(ch) {                                             \
+            if (_string_pos > (POOL_SIZE - 1)) {                        \
+                error_fatal(error_message::ER_POOLOVF, _string_line);   \
+            }                                                           \
+            _string_pool[_string_pos] = ch;                             \
+            _string_pos++;                                              \
 }
 
 /* 
@@ -111,14 +111,14 @@ extern unsigned int _string_line;
  * 
  * void string_done();
  */
-#define string_done(ch) {                                   \
-            int length = _string_pos - (_string_limit + 2); \
-            if (length > 65535) {                           \
-                error_warn(ER_TOOLONG, _string_line);       \
-                length = 65535;                             \
-            }                                               \
-            _string_pool[_string_limit] = length & 0xFF;    \
-            _string_pool[_string_limit+1] = length >> 8;    \
+#define string_done(ch) {                                               \
+            int length = _string_pos - (_string_limit + 2);             \
+            if (length > 65535) {                                       \
+                error_warn(error_message::ER_TOOLONG, _string_line);    \
+                length = 65535;                                         \
+            }                                                           \
+            _string_pool[_string_limit] = length & 0xFF;                \
+            _string_pool[_string_limit+1] = length >> 8;                \
 }
 
 /* 

@@ -1,12 +1,12 @@
 /*-
- * errors.h
+ * keywords.h
  * 
  * This implementation is following the theory in the Compiler Construction
  * course given by Douglas W.Jones from The University of Iowa Department of 
  * Computer Science
  * http://homepage.divms.uiowa.edu/~jones/compiler/
  * 
- * Copyright (c) 2019 Fehmi Noyan Isi
+ * Copyright (c) 2020 Fehmi Noyan Isi
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,23 +30,48 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _ERRORS_H_
-#define _ERRORS_H_
+#ifndef _KEYWORDS_H_
+#define _KEYWORDS_H_
 
-#include "lexical.h"
+#include "stringpool.hpp"
+#include "symboltable.hpp"
+
+/* 
+ * the best KEY_HASH_SIZE value is found by trialling several values and 
+ * comparing the number of observed collisions. See Lecture 14, Predefined
+ * Symbols and Keywords
+ */
+#define KEY_HASH_SIZE   89
+#define KEY_MAX 21 
+
+/* list of all the keywords in the language */
 typedef enum {
-    ER_BADFILE,
-    ER_TOOBIG,
-    ER_POOLOVF,
-    ER_TOOLONG,
-    ER_SYMTAB,
-    ER_BADSTR,
-    ER_SYMCOL
-} error_message;
+        KEY_INVALID,
+        KEY_END,        KEY_CONST,      KEY_FINAL,      KEY_TYPE,
+        KEY_EXCEPTION,  KEY_VAR,        KEY_PROCEDURE,  KEY_FUNCTION,
+        KEY_PRIVATE,    KEY_RESTRICTED, KEY_EXTERNAL,   KEY_ARRAY,
+        KEY_SET,        KEY_OF,         KEY_RECORD,     KEY_IF,
+        KEY_THEN,       KEY_ELSE,       KEY_SELECT,     KEY_CASE,
+        KEY_WHILE,      KEY_DO,         KEY_UNTIL,      KEY_FOR,
+        KEY_IN,         KEY_CATCH,      KEY_RAISE,      KEY_NULL
+} key_handle;
 
-void error_fatal(error_message, int);
-void error_warn(error_message, int);
-void error_unexpected(lex_type, lex_type, int);
-void error_punctype(punc_type, punc_type, int);
+/* data structure to hold key - symbol pairs */
+typedef struct {
+        key_handle key;
+        symbol_handle sym;
+} key_item;
+
+/* initializer for the keyword interface */
+void key_init();
+
+/* outputs the indicated keyword ot a human readable file */
+void key_put(key_handle, FILE*);
+
+/* 
+ * returns the corresponading key_handle for the symbol, KEY_INVALID 
+ * if the requested symbol is not found, i.e. symbol is not a keyword
+ */
+key_handle key_lookup(symbol_handle);
 
 #endif

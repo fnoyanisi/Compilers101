@@ -32,7 +32,7 @@
 
 #include <iostream>
 #include <fstream>
-#include "stringpool.h"
+#include "stringpool.hpp"
 
 /* an index within [0 ~ POOL_SIZE-1] range to address the strings */
 typedef uint32_t string_handle;

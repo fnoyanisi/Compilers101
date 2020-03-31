@@ -31,8 +31,9 @@
  */
 
 #include <iostream>
-#include "errors.h"
-#include "lexical.h"
+
+#include "errors.hpp"
+#include "lexical.hpp"
 
 static const char *message[] = {
     /* ER_BADFILE */    "Cannot open input file",
@@ -46,15 +47,15 @@ static const char *message[] = {
 
 void 
 error_fatal(error_message er, int line){
-    std::cerr << "Fatal error in line " << line << ": " << message[er];
-    std::cerr << std::endl;
+    std::cerr << "Fatal error in line " << line << ": ";
+    std::cerr << message[static_cast<int>(er)] << std::endl;
     exit(EXIT_FAILURE);
 }
 
 void
 error_warn(error_message er, int line){
-    std::cerr << "Error on line " << line << ": " << message[er];
-    std::cerr << std::endl;
+    std::cerr << "Error on line " << line << ": ";
+    std::cerr << message[static_cast<int>(er)] << std::endl;
 }
 
 void 

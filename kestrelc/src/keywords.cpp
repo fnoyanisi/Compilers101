@@ -32,9 +32,9 @@
 
 #include <iostream>
 #include <fstream>
-#include "errors.h"
-#include "keywords.h"
-#include "symboltable.h"
+#include "errors.hpp"
+#include "keywords.hpp"
+#include "symboltable.hpp"
 
 /* 
  * list of all the keywords in the language, the order of the items has 
@@ -82,7 +82,7 @@ key_init() {
                         key_hash[hash].key = (key_handle)i;
                         key_hash[hash].sym = s;
                 } else {
-                        error_fatal(ER_SYMCOL, 0);
+                        error_fatal(error_message::ER_SYMCOL, 0);
                 }
         }
 }

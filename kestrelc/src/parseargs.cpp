@@ -28,7 +28,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <utility>
-#include "parseargs.h"
+
+#include "parseargs.hpp"
 
 #define PROG_NAME_KEY  '%'
 

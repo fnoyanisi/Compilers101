@@ -31,9 +31,9 @@
  */
 
 #include <stdlib.h>
-#include "errors.h"
-#include "stringpool.h"
-#include "symboltable.h"
+#include "errors.hpp"
+#include "stringpool.hpp"
+#include "symboltable.hpp"
 
 /* maps symbol handles to string handles */
 string_handle _symbol_table[SYMBOL_SIZE];
@@ -77,7 +77,7 @@ symbol_lookup(){
             place = 0;
         
         if (place == _symbol_hash)
-            error_fatal(ER_SYMTAB, _symbol_line);
+            error_fatal(error_message::ER_SYMTAB, _symbol_line);
     }
 }
 
