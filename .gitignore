@@ -5,3 +5,4 @@ Catch2/
 .DS_Store
 a.out
 *.dSYM
+*.bak
