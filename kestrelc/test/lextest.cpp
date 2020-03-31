@@ -62,10 +62,10 @@ void
 write_outfile(lexer& l, std::string file) {
   std::ofstream ofs(file);
   do {
-    l.lex_put(l.lex_get(), ofs);
+    l.lex_put(ofs);
     ofs << std::endl;
     l.lex_advance();
-  } while (l.lex_get().type != ENDFILE);
+  } while (l.lex_get().type() != ENDFILE);
   ofs.close();
 }
 
@@ -86,6 +86,12 @@ check_diff(std::vector<std::string> exp, std::string file){
 }
 
 // Test cases for the lexer
+// many unit tests use write_srcfile() to generate a simple Kestrel source 
+// file which is named as test.kl
+// the lexer object created for each test case/section uses test.kl as the
+// input source file 
+// the output of the lexer is written into the output.kl file, which, 
+// obviously, has the tokenized output from the lexer
 TEST_CASE("LEXER") {
   std::string srcfile_name("test.kl");
   std::string outfile_name("output.kl");
@@ -98,7 +104,7 @@ TEST_CASE("LEXER") {
     lexer test(srcfile_name);
 
     for (int i: {1, 2, 3, 4}) {
-      REQUIRE(i == test.lex_get().line);
+      REQUIRE(i == test.lex_get().line());
       test.lex_advance();
     }
   }
@@ -112,13 +118,14 @@ TEST_CASE("LEXER") {
     lexer test(srcfile_name);
 
     for (int i: {1, 2, 3, 4, 5}) {
-      REQUIRE(i == test.lex_get().value);
+      REQUIRE(i == test.lex_get().value());
       test.lex_advance();
     }
   }
 
   SECTION("Test punctuation") {
-    std::vector<std::string> series{";", "(", ")", ",", "/", "<", "-", "%", "~"};
+    std::vector<std::string> series{";", "(", ")", ",", "/", "<", "-", 
+    "%", "~"};
     write_srcfile(series, srcfile_name);
 
     lexer test(srcfile_name);
@@ -128,7 +135,8 @@ TEST_CASE("LEXER") {
   }
 
   SECTION("Test multi-char punctuation") {
-    std::vector<std::string> series{";", "/=", "(", ">", ")", ">=", "<=", "-", "/"};
+    std::vector<std::string> series{";", "/=", "(", ">", ")", ">=", "<=", 
+    "-", "/"};
     write_srcfile(series, srcfile_name);
 
     lexer test(srcfile_name);
@@ -161,52 +169,10 @@ TEST_CASE("LEXER") {
     
     lexer test(srcfile_name);
     lexeme lx = test.lex_get();
-    char *p = symbol_get(lx.value);
-    std::cout << strlen(p) << std::endl;
-    std::cout << series.at(0).size() << std::endl;
-    REQUIRE(p == "testing");
+    char *p = symbol_get(lx.value());
+    REQUIRE(p == series.at(0));
   }
 
   std::filesystem::remove(srcfile_name);
   std::filesystem::remove(outfile_name);
 }
-
-// /*
-//  * Comapres each lexeme from the expected output, given by the 
-//  * parameter s, with the one read from o_file, which is the output 
-//  * of the lexer.
-//  * Parameter len is the length of the character string array, s.
-//  */
-// void check_diff(const char **s, int len, FILE *fd){
-//   int i, slen, buflen = 32;
-//   char buf[buflen]; /* buffer to store the text read from the file */
-  
-//   rewind(fd); /* go back to begining of the file */
-  
-//   for (i=0; i < len; i++) {
-//     slen = strlen(s[i]);
-//     if (fgets(buf, buflen, fd) == NULL){
-//       perror(o_file);
-//       exit(EXIT_FAILURE);
-//     }
-//     TEST_ASSERT_EQUAL_STRING_LEN(s[i], buf,slen);
-//     lex_advance();
-//   }
-// }
-
-// void test_string(void) {
-//   int i, len = 1;
-//   const char *str[] = {"'testing'"};
-//   lexeme l;
-//   char *p;
-
-//   write_s_file(str, len);
-//   lex_open(s_file);
-
-//   l = lex_get();
-
-//   /* without quotes */
-//   p = symbol_get(lex_next.value);
-//   TEST_ASSERT_EQUAL_STRING("testing",p);
-//   free(p);
-// }
