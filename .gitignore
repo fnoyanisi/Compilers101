@@ -1,5 +1,6 @@
 build/
 unity/
+Catch2/
 .vscode
 .DS_Store
 a.out
