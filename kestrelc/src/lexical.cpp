@@ -236,18 +236,18 @@ lexer::lex_advance() {
 }
 
 void 
-lexer::lex_put(const lexeme& lex, std::ofstream& f) {
+lexer::lex_put(std::ofstream& f) const {
     /* reconstruct and output lex to file f */
-    switch (lex.type()) {
+    switch (lex_next.type()) {
         case IDENT:
         case KEYWORD:
         /* =BUG= missing code for these lexeme types */
             break;
         case NUMBER:
-            f << lex.value();
+            f << lex_next.value();
             break;
         case PUNCT:
-            f << punc_name[lex.value()];
+            f << punc_name[lex_next.value()];
             break;
         case STRING:
         case ENDFILE:

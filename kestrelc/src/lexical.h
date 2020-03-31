@@ -193,6 +193,8 @@ class lexeme {
       unsigned line_;    /* line number of the lexeme */
       unsigned pos_;     /* zero-indexed start location within the line */
     public:
+      // some code smell here
+      // keep getters and setter for some future additions
       lex_type type() const { return type_; }
       void type(lex_type t) { type_ = std::move(t); }
       uint32_t value() const { return value_; }
@@ -218,7 +220,7 @@ class lexer {
       lexer(std::string);
       lexeme lex_get() const;
       void lex_advance();
-      void lex_put(const lexeme&, std::ofstream&);
+      void lex_put(std::ofstream&) const;
       unsigned line_number() const;
       unsigned pos() const;
       void posinc();
