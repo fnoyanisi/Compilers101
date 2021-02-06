@@ -1,5 +1,5 @@
 /*-
- * parseargs.h
+ * parseargs.hpp
  * 
  * Simple API for parsing command lien arguments.
  * 

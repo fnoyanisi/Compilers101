@@ -1,5 +1,5 @@
 /*-
- * lexsupport.c
+ * lexsupport.hpp
  * Copyright (c) 2019 Fehmi Noyan Isi
  * All rights reserved.
  *

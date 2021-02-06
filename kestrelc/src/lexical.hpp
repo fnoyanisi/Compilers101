@@ -1,5 +1,5 @@
 /*-
- * lexical.h 
+ * lexical.hpp
  * 
  * This implementation is following the theory in the Compiler Construction
  * course given by Douglas W.Jones from The University of Iowa Department of 
