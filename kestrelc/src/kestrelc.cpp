@@ -54,6 +54,11 @@ main(int argc, char **argv) {
     std::string in_file_name, out_file_name;
     std::map<char, std::string> args;
 
+    if (argc < 3){
+        usage();
+        exit(1);
+    }
+    
     try {
         args = parse_args(argc, argv, "i:o:s");
     } catch (std::invalid_argument& e) {
