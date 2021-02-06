@@ -43,7 +43,7 @@ bool sflag;
 
 void 
 usage() {
-    std::cerr << "usage: kestrelc -i source_file [-s] -o output_file";
+    std::cerr << "usage: kestrelc -i source_file [-s] [-o output_file]";
     std::cerr << std::endl;
 }
 
@@ -56,7 +56,7 @@ main(int argc, char **argv) {
 
     if (argc < 3){
         usage();
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     
     try {
@@ -70,8 +70,17 @@ main(int argc, char **argv) {
     if (args.find('s') != args.end())
         sflag = true;
 
+    if (args.find('i') == args.end()) {
+        usage();
+        exit(EXIT_FAILURE);
+    }
+    
     in_file_name = args.at('i');
-    out_file_name = args.at('o');
+    
+    if (args.find('o') == args.end())
+        out_file_name = "a.out";
+    else
+        out_file_name = args.at('o');
 
     in_file.open(in_file_name);
     if (in_file.is_open() == false) {
@@ -82,7 +91,7 @@ main(int argc, char **argv) {
 
     out_file.open(out_file_name);
     if (out_file.is_open() == false) {
-        std::cerr << "Unable to open file for writing: " + in_file_name;
+        std::cerr << "Unable to open file for writing: " + out_file_name;
         std::cerr << std::endl;
         exit(EXIT_FAILURE);
     }
