@@ -41,10 +41,10 @@
 #include "lexsupport.hpp"
 
 /* to keep track of the position in the line */
-#define lex_getc(lxr, file)          (lxr->posinc(), file.get())
-#define lex_ungetc(lxr, file)        (lxr->posdec(), file.unget())
+#define lex_getc(lxr, file)          (lxr->positionIncrement(), file.get())
+#define lex_ungetc(lxr, file)        (lxr->positionDecrement(), file.unget())
 
-/* this has to be in the same order as lex_types */
+/* this has to be in the same order as LexTypes */
 const char *lex_name[]= {
     /* NONE     */  "NONE",
     /* IDENT    */  "IDENT", 
@@ -68,12 +68,12 @@ const char *punc_name[]= {
 };
 
 /* helper function that returns lex_next */
-lexeme 
-lexer::lex_get(void) const {
+Lexeme 
+Lexer::getNext(void) const {
     return lex_next;
 }
 
-lexer::lexer(std::string f) {
+Lexer::Lexer(std::string f) {
     pos_ = 0;
     line_number_ = 1;
 
@@ -90,11 +90,11 @@ lexer::lexer(std::string f) {
     lex_this.line(line_number_);
     lex_this.pos(pos_);
 
-    lex_advance();
+    advance();
 }
 
 void 
-lexer::lex_advance() {
+Lexer::advance() {
     key_handle key;
     char next_ch;
     lex_this = lex_next;
@@ -189,7 +189,7 @@ lexer::lex_advance() {
         do {
             symbol_append(ch);
             ch = lex_getc(this, infile);
-        } while (ch != EOF && ISCLASS(ch, LETTER | NUMBER));
+        } while (ch != EOF && ISCLASS(ch, LETTER | DIGIT));
         lex_next.value(symbol_lookup());
 
         key = key_lookup(lex_next.value());
@@ -219,7 +219,7 @@ lexer::lex_advance() {
     } else {
         /* other */
 
-        /* no lexeme assignments, just skip */
+        /* no Lexeme assignments, just skip */
 
         ch = lex_getc(this, infile);
         if (infile.eof()){
@@ -236,12 +236,12 @@ lexer::lex_advance() {
 }
 
 void 
-lexer::lex_put(std::ofstream& f) const {
+Lexer::put(std::ofstream& f) const {
     /* reconstruct and output lex to file f */
     switch (lex_next.type()) {
         case IDENT:
         case KEYWORD:
-        /* =BUG= missing code for these lexeme types */
+        /* =BUG= missing code for these Lexeme types */
             break;
         case NUMBER:
             f << lex_next.value();
@@ -252,27 +252,27 @@ lexer::lex_put(std::ofstream& f) const {
         case STRING:
         case ENDFILE:
         case NONE:
-        /* =BUG= missing code for these lexeme types */
+        /* =BUG= missing code for these Lexeme types */
             break;
     }
 }
 
 unsigned
-lexer::line_number() const {
+Lexer::lineNumber() const {
     return line_number_;
 }
 
 unsigned
-lexer::pos() const {
+Lexer::position() const {
     return pos_;
 }
 
 void
-lexer::posinc() {
+Lexer::positionIncrement() {
     pos_++;
 }
 
 void
-lexer::posdec() {
+Lexer::positionDecrement() {
     pos_--;
 }

@@ -44,7 +44,7 @@ extern unsigned line_number;
 /******************************************************************************
  * character identification
  *****************************************************************************/
-enum char_type {
+enum CharType {
     OTHER=0, WHITESPACE=1, LETTER=2, DIGIT=4, PUNCTUATION=8
 };
 
@@ -53,7 +53,7 @@ enum char_type {
 #define LET LETTER
 #define DIG DIGIT
 #define PUN PUNCTUATION
-static const char_type char_class[256] = {
+static const CharType char_class[256] = {
   /*NUL SOH STX ETX EOT ENQ ACK BEL BS  HT  LF  VT  FF  CR  SO  SI */ 
     OTH,OTH,OTH,OTH,OTH,OTH,OTH,OTH,OTH,WIT,WIT,WIT,WIT,WIT,OTH,OTH,
   /*DLE DC1 DC2 DC3 DC4 NAK SYN ETB CAN EM  SUB ESC FS  GS  RS  US */ 
@@ -91,7 +91,7 @@ static const char_type char_class[256] = {
 /******************************************************************************
  * punctuation character type
  *****************************************************************************/
-enum punc_type {
+enum PuncType {
     PT_SEMI     /* ; */,    PT_EQUALS   /* = */,    PT_COLON    /* : */,
     PT_LPAREN   /* ( */,    PT_LBRAKT   /* [ */,    PT_LBRACE   /* { */,
     PT_RPAREN   /* ) */,    PT_RBRAKT   /* ] */,    PT_RBRACE   /* } */,
@@ -128,7 +128,7 @@ extern const char *punc_name[];
 #define NOT PT_NOT
 #define DOT PT_DOT
 #define NON PT_NONE
-static const punc_type punc_class[256] = {
+static const PuncType punc_class[256] = {
   /*NUL SOH STX ETX EOT ENQ ACK BEL BS  HT  LF  VT  FF  CR  SO  SI */ 
     NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,NON,
   /*DLE DC1 DC2 DC3 DC4 NAK SYN ETB CAN EM  SUB ESC FS  GS  RS  US */ 
@@ -181,22 +181,22 @@ static const punc_type punc_class[256] = {
 #undef NON
 
 /******************************************************************************
- * lexeme related definitions 
+ * Lexeme related definitions 
  *****************************************************************************/
-enum lex_type {NONE, IDENT, KEYWORD, NUMBER, STRING, PUNCT, ENDFILE};
+enum LexType {NONE, IDENT, KEYWORD, NUMBER, STRING, PUNCT, ENDFILE};
 extern const char *lex_name[];
 
-class lexeme {
+class Lexeme {
     private:
-      lex_type type_;   
+      LexType type_;   
       uint32_t value_;
-      unsigned line_;    /* line number of the lexeme */
+      unsigned line_;    /* line number of the Lexeme */
       unsigned pos_;     /* zero-indexed start location within the line */
     public:
       // some code smell here
       // keep getters and setter for some future additions
-      lex_type type() const { return type_; }
-      void type(lex_type t) { type_ = std::move(t); }
+      LexType type() const { return type_; }
+      void type(LexType t) { type_ = std::move(t); }
       uint32_t value() const { return value_; }
       void value(uint32_t v) { value_ = std::move(v); }
       unsigned line() const { return line_; }
@@ -209,22 +209,22 @@ class lexeme {
  * function declarations
  *****************************************************************************/
 
-class lexer {
+class Lexer {
     private:
-      lexeme lex_this;          // the current lexeme
-      lexeme lex_next;          // the next lexeme
+      Lexeme lex_this;          // the current Lexeme
+      Lexeme lex_next;          // the next Lexeme
       std::ifstream infile;
-      int ch;                   // current char not yet part of a lexeme
+      int ch;                   // current char not yet part of a Lexeme
       unsigned pos_, line_number_;
     public:
-      lexer(std::string);
-      lexeme lex_get() const;
-      void lex_advance();
-      void lex_put(std::ofstream&) const;
-      unsigned line_number() const;
-      unsigned pos() const;
-      void posinc();
-      void posdec();
+      Lexer(std::string);
+      Lexeme getNext() const;
+      void advance();
+      void put(std::ofstream&) const;
+      unsigned lineNumber() const;
+      unsigned position() const;
+      void positionIncrement();
+      void positionDecrement();
 };
 
 #endif

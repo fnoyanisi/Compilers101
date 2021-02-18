@@ -57,21 +57,21 @@ write_srcfile(const std::vector<std::string>& series, std::string file,
 }
 
 // writes the output into the output file
-// the input is provided by the lexer
+// the input is provided by the Lexer
 void
-write_outfile(lexer& l, std::string file) {
+write_outfile(Lexer& l, std::string file) {
   std::ofstream ofs(file);
   do {
-    l.lex_put(ofs);
+    l.put(ofs);
     ofs << std::endl;
-    l.lex_advance();
-  } while (l.lex_get().type() != ENDFILE);
+    l.advance();
+  } while (l.getNext().type() != ENDFILE);
   ofs.close();
 }
 
 // given an expected output, this function compares it with the 
 // data read from the file.
-// ideally, the data in the file should be the output of the lexer
+// ideally, the data in the file should be the output of the Lexer
 void 
 check_diff(std::vector<std::string> exp, std::string file){
   std::ifstream ifs(file);
@@ -85,14 +85,14 @@ check_diff(std::vector<std::string> exp, std::string file){
   REQUIRE(exp == from_file);
 }
 
-// Test cases for the lexer
+// Test cases for the Lexer
 // many unit tests use write_srcfile() to generate a simple Kestrel source 
 // file which is named as test.kl
-// the lexer object created for each test case/section uses test.kl as the
+// the Lexer object created for each test case/section uses test.kl as the
 // input source file 
-// the output of the lexer is written into the output.kl file, which, 
-// obviously, has the tokenized output from the lexer
-TEST_CASE("LEXER") {
+// the output of the Lexer is written into the output.kl file, which, 
+// obviously, has the tokenized output from the Lexer
+TEST_CASE("Lexer") {
   std::string srcfile_name("test.kl");
   std::string outfile_name("output.kl");
 
@@ -101,25 +101,25 @@ TEST_CASE("LEXER") {
     std::vector<std::string> series{"1","2","3","4"};
     write_srcfile(series, srcfile_name);
     
-    lexer test(srcfile_name);
+    Lexer test(srcfile_name);
 
     for (int i: {1, 2, 3, 4}) {
-      REQUIRE(i == test.lex_get().line());
-      test.lex_advance();
+      REQUIRE(i == test.getNext().line());
+      test.advance();
     }
   }
 
-  // the lexer should ignore white spaces and only store the numeric 
+  // the Lexer should ignore white spaces and only store the numeric 
   // values in lex_next.value
   SECTION("Ignore white spaces") {
     std::vector<std::string> series{"   1","2","3  ","  4","5"};
     write_srcfile(series, srcfile_name);
 
-    lexer test(srcfile_name);
+    Lexer test(srcfile_name);
 
     for (int i: {1, 2, 3, 4, 5}) {
-      REQUIRE(i == test.lex_get().value());
-      test.lex_advance();
+      REQUIRE(i == test.getNext().value());
+      test.advance();
     }
   }
 
@@ -128,7 +128,7 @@ TEST_CASE("LEXER") {
     "%", "~"};
     write_srcfile(series, srcfile_name);
 
-    lexer test(srcfile_name);
+    Lexer test(srcfile_name);
     write_outfile(test, outfile_name);
 
     check_diff(series, outfile_name);
@@ -139,7 +139,7 @@ TEST_CASE("LEXER") {
     "-", "/"};
     write_srcfile(series, srcfile_name);
 
-    lexer test(srcfile_name);
+    Lexer test(srcfile_name);
     write_outfile(test, outfile_name);
 
     check_diff(series, outfile_name);
@@ -157,7 +157,7 @@ TEST_CASE("LEXER") {
                                       "-"};
     write_srcfile(series, srcfile_name);
 
-    lexer test(srcfile_name);
+    Lexer test(srcfile_name);
     write_outfile(test, outfile_name);
 
     check_diff(expected, outfile_name);
@@ -167,8 +167,8 @@ TEST_CASE("LEXER") {
     std::vector<std::string> series{"testing"};
     write_srcfile(series, srcfile_name, false);
     
-    lexer test(srcfile_name);
-    lexeme lx = test.lex_get();
+    Lexer test(srcfile_name);
+    Lexeme lx = test.getNext();
     char *p = symbol_get(lx.value());
     REQUIRE(p == series.at(0));
   }

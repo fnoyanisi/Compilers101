@@ -47,7 +47,7 @@ enum class error_message {
 
 void error_fatal(error_message, int);
 void error_warn(error_message, int);
-void error_unexpected(lex_type, lex_type, int);
-void error_punctype(punc_type, punc_type, int);
+void error_unexpected(LexType, LexType, int);
+void error_punctype(PuncType, PuncType, int);
 
 #endif

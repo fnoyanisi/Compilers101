@@ -30,17 +30,17 @@
 #include "lexical.hpp"
 #include "sets.hpp"
 
-/* Forces a lexeme to be of type PUNCT and specific punc_type */
-void lex_forcepunc(punc_type);
+/* Forces a Lexeme to be of type PUNCT and specific PuncType */
+void lex_forcepunc(PuncType);
 
-/* bool lex_istype(lexeme lex, lex_types t); */
+/* bool lex_istype(Lexeme lex, LexTypes t); */
 #define lex_istype(lex, t) ((lex.type == t))
 
-/* bool lex_ispuncset(lexeme lex, set32_t s); */
+/* bool lex_ispuncset(Lexeme lex, set32_t s); */
 #define lex_ispuncset(lex, s) (                                     \
                 (lex_istype(lex,PUNCT) && in_set32(lex.value, s))
 
-/* bool lex_ispunc(lexeme lex, punc_type t); */
+/* bool lex_ispunc(Lexeme lex, PuncType t); */
 #define lex_ispunc(lex, t) (lex_istype(lex,PUNCT) && (lex.value == t))
 
 #endif

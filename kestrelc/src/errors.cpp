@@ -59,17 +59,17 @@ error_warn(error_message er, int line){
 }
 
 void 
-error_unexpected(lex_type got, lex_type exp, int line) {
+error_unexpected(LexType got, LexType exp, int line) {
     std::cerr << "Error on line " << line << ": ";
-    std::cerr << "Expecting lex_type "<< lex_name[exp] << " but";
+    std::cerr << "Expecting LexType "<< lex_name[exp] << " but";
     std::cerr << " got " << lex_name[got] << std::endl;
     exit(EXIT_FAILURE);
 }
 
 void 
-error_punctype(punc_type got, punc_type exp, int line) {
+error_punctype(PuncType got, PuncType exp, int line) {
     std::cerr << "Error on line " << line << ": ";
-    std::cerr << "Expecting punc_type "<< punc_name[exp] << " but";
+    std::cerr << "Expecting PuncType "<< punc_name[exp] << " but";
     std::cerr << " got " << punc_name[got] << std::endl;
     exit(EXIT_FAILURE);
 }

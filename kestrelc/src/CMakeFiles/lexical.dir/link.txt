@@ -1,0 +1,2 @@
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar qc liblexical.a CMakeFiles/lexical.dir/kestrelc.cpp.o CMakeFiles/lexical.dir/parseargs.cpp.o CMakeFiles/lexical.dir/lexical.cpp.o CMakeFiles/lexical.dir/errors.cpp.o CMakeFiles/lexical.dir/symboltable.cpp.o CMakeFiles/lexical.dir/stringpool.cpp.o CMakeFiles/lexical.dir/keywords.cpp.o
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib liblexical.a

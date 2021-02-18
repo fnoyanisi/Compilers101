@@ -35,11 +35,11 @@
 #include "lexsupport.hpp"
 
 void 
-lex_forcepunc(punc_type t) {
+lex_forcepunc(PuncType t) {
         if (lex_ispunc(lex_this, t))
                 lex_advance();
         else if (lex_istype(lex_this, PUNCT))
-                error_punctype((punc_type)lex_this.value, t, line_number);
+                error_punctype((PuncType)lex_this.value, t, line_number);
         else
                 error_unexpected(lex_this.type, PUNCT, line_number); 
 }
