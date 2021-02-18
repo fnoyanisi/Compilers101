@@ -7,10 +7,12 @@ This implementation of Kestrel compiler closely follows the concepts taught in t
 
 ## Implementation Notes
 
-### Strings and identifiers in the lexer
+### Strings, symbols and identifiers in the lexer
 The compiler uses only a single buffer, which has a set size (see `POOL_SIZE` in _stringpool.hpp_), to store all the identifiers, the character strings and the keywords. The _string pool interface (stringpool.hpp and stringpool.cpp)_  behaves as the lower layer of the string storage API whereas the _symbol table interface (symboltable.hpp and symboltable.cpp)_ provides an abstraction on top of the _string pool interface_ and makes sure each string is stored only once. 
 
-The hash value of each string is used as an index within `_symbol_table[]` to store the references to the starting position of that particular string within `_string_pool[]`. For a string `S` with a hash value `H`, if the result of the lookup `_symbol_table[H]` returns `STRING_NUL`, then `S` is not in the symbol table. In this case , the start location of the character string within `_string_pool[]`, which is `_string_limit` and obtained by `_symbol_string = string_start(line)` in _symboltable.hpp_, is saved in `_symbol_table[]` with the key being `H`. 
+Simply put, the job of the _string pool_ is to store all the identifiers without any processing; it is our storage space. On the other hand, the _symbol table_ is used to make sure we do not store a string more than once and it also provides a mechanism for accessing each identifier within _string pool_.
+
+The hash value of each string is used as an index within `_symbol_table[]` to store the references to the starting position of that particular identifier within `_string_pool[]`. For a string `S` with a hash value `H`, if the result of the lookup `_symbol_table[H]` returns `STRING_NUL`, then `S` is not in the symbol table. In this case , the start location of the character string within `_string_pool[]`, which is `_string_limit` and obtained by `_symbol_string = string_start(line)` in _symboltable.hpp_, is saved in `_symbol_table[]` with the key being `H`. 
 
 ## Grammar 
 The ENBF grammar for Kestrel programming language is [here](http://homepage.divms.uiowa.edu/~jones/compiler/kestrel/kestrelEBNF.txt)
