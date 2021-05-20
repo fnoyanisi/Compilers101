@@ -13,9 +13,10 @@ An arithmetic calculator written in C++ to practice lexers and parsers. In this 
 
 &ensp;&ensp;&ensp;&ensp; - a railroad or syntax diagram for the grammar used to implement the interpreter
 
-&ensp;&ensp;&ensp;&ensp; - a simple recursice descent parser that follows the rules in the railroad diagram
+&ensp;&ensp;&ensp;&ensp; - a simple recursive descent parser that follows the rules in the railroad diagram
 
 * ### kestrelc
+* (no longer being worked on)
 Compiler for the Kestrel programming language. This project closely follows [Douglas W. Jones' lecture notes on Compiler Construction](http://homepage.divms.uiowa.edu/~jones/compiler/) and the compiler is written in C.
 
 This is a full compiler with a front-end and a beck-end generating code for ARM processors. 
@@ -23,6 +24,19 @@ This is a full compiler with a front-end and a beck-end generating code for ARM 
 In this project, you will find
 
 &ensp;&ensp;&ensp;&ensp; - a lexer which is implemented as a separate static library
+
+* ### blockreader
+A compiler front-end with a lexer, parser and simple symbol table. The program reads the input source code, which can have assignments, nested program blocks and statements, and then generates a symbol table. The theory for this program is covered in Chapter2 of [_Compilers: Principles, Techniques and Tools_](https://en.wikipedia.org/wiki/Compilers:_Principles,_Techniques,_and_Tools).
+
+Some of the things covered in this program are
+
+&ensp;&ensp;&ensp;&ensp; - a lexer
+
+&ensp;&ensp;&ensp;&ensp; - a recursive descent parser
+
+&ensp;&ensp;&ensp;&ensp; - a simple symbol table implementation
+
+You can visit the repository from [this link](https://github.com/fnoyanisi/blockreader).
 
 ## Reading
 Some good reading material on the subject. 
