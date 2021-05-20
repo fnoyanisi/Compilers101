@@ -16,7 +16,7 @@ An arithmetic calculator written in C++ to practice lexers and parsers. In this 
 &ensp;&ensp;&ensp;&ensp; - a simple recursive descent parser that follows the rules in the railroad diagram
 
 * ### kestrelc
-* (no longer being worked on)
+(I stopped working on this one - no plans to continue for now)
 Compiler for the Kestrel programming language. This project closely follows [Douglas W. Jones' lecture notes on Compiler Construction](http://homepage.divms.uiowa.edu/~jones/compiler/) and the compiler is written in C.
 
 This is a full compiler with a front-end and a beck-end generating code for ARM processors. 
